@@ -1,0 +1,33 @@
+#logo-desktop {
+    width: 100px;
+    height: 100px;
+    background: red;
+}
+
+#search-wrapper {
+    background: blue;
+}
+
+#search-form {
+    background: lightblue;
+}
+
+#account-icon {
+    background: green;
+}
+
+#cart-icon {
+    background: lightgreen;
+}
+
+/* Expansion des menus pour prendre toute la largeur */
+#menuTop,
+#menuDropdown,
+#menuDropdown .navbar-nav {
+    width: 100%;
+}
+
+/* Style des items du menu gauche (ou deuxieme menu en desktop) */
+#menuDropdown .nav-item:hover {
+    background: rgba(200, 200, 200, 0.1);
+}
