@@ -1,26 +1,59 @@
 <?php
-$request = (isset($_GET['request']) ? $_GET['request'] : '');
-$request = explode('/', $request);
+error_reporting(E_ALL);
+ini_set("display_errors", true);
 
-$module = (count($request) >= 1 ? $request[0] : false);
-$method = (count($request) >= 2 ? $request[1] : false);
-$id = (count($request) >= 3 ? $request[2] : false);
+require_once 'lib/core.php';
 
-require_once 'controller/' . $module . '.php';
-$controller = new $module();
-
-if ($method) {
-    if ($id) {
-        $view = $controller->$method($id, $_GET);
-    }
-    else {
-        $view = $controller->$method($_GET);
-    }
+if (!isset($_SESSION)) {
+	session_start();
 }
+
+// Application specific values
+$nameApp = 'fdsport';
+$defaultController = 'index';
+$defaultMethod = 'index';
+
+// Context initialisation
+$context = context::getInstance();
+$context->init($nameApp);
+
+// Get controller, method and id from request URL
+$request = (isset($_GET['request']) ? $_GET['request'] : ''); 
+$request = explode('/', $request); 
+ 
+$controller = (count($request) >= 1 ? $request[0] : $defaultController); 
+$method = (count($request) >= 2 ? $request[1] : $defaultMethod); 
+$id = (count($request) >= 3 ? $request[2] : false); 
+
+require_once 'controller/' . $controller . '.php';
+
+$controllerInst = new $controller();
+$view = false;
+
+if ($id) { 
+    $view = $controllerInst->$method($id, $_REQUEST); 
+} 
+else { 
+    $view = $controllerInst->$method($_REQUEST); 
+}
+
+
+/*
+// Access control
+if(key_exists("action", $_REQUEST) && $context->getSessionAttribute("user") !== null)
+	$action =  $_REQUEST['action'];
+*/
+
+// Error handling
+if($view === false){
+	echo "Une grave erreur s'est produite, il est probable que l'action ".$action." n'existe pas...";
+	die;
+}
+
+// Template
 else {
-    $view = $controller->index($_GET);
+	$viewContent = '/view/' . $view . '.php';
+    include('/view/layout.php');
 }
 
-require_once 'template/header.php';
-require_once 'view/' . $view . '.php';
-require_once 'template/footer.php';
+?>
