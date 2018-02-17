@@ -1,6 +1,6 @@
-#<IfModule mod_rewrite.c>
+<IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule ^(.*)$ fdsport.php?request=$1 [NC,L]
-#</IfModule>
+</IfModule>

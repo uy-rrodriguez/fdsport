@@ -2,13 +2,13 @@
 <html lang="fr">
 
 <head>
-    <title>FD Sport</title>
+    <title>FD Sport - <?= $this->e($title) ?></title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="assets/fontawesome/css/fontawesome-all.min.css">
-    <link rel="stylesheet" href="assets/css/fdsport.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/fontawesome/css/fontawesome-all.min.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/fdsport.css">
 </head>
 
 <body>

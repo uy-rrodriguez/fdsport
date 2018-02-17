@@ -1,3 +1,5 @@
-<?php include('/view/template/header.php'); ?>
-<?php include($viewContent); ?>
-<?php include('/view/template/footer.php'); ?>
+<?php $this->insert('partials/header', ['title' => $title]) ?>
+
+<?= $this->section('content') ?>
+
+<?php $this->insert('partials/footer') ?>
