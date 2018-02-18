@@ -142,8 +142,26 @@ a.fdsport-btn-show:visited {
     box-shadow: 0px 0px 2px 0px #DDDDDD;
 }
 
+/* Container with margins */
 .fdsport-wrapper {
     margin: 10px 0px;
+}
+
+/* Circles with colors */
+.fdsport-item-color {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+}
+.fdsport-item-color-red {
+    background: #DD2222;
+}
+.fdsport-item-color-blue {
+    background: #2222CC;
+}
+.fdsport-item-color-yellow {
+    background: #EFEF22;
 }
 
 
@@ -217,6 +235,38 @@ a.fdsport-btn-show:visited {
 }
 
 /* End Carousel : Products */
+
+/* Carousel : Product images */
+
+.fdsport-carousel-product-images .fdsport-carousel-images-indicators {
+    position: relative;
+    margin-top: 20px;
+    margin-right: 0%;
+    margin-left: 0%;
+    justify-content: flex-start;
+    list-style: none;
+}
+
+.fdsport-carousel-product-images .fdsport-carousel-images-indicators > li {
+    width: 100px;
+    height: 100px;
+    text-indent: 0px;
+}
+
+.fdsport-carousel-product-images .fdsport-carousel-images-indicators > li.active {
+    border: 2px solid #8C8C8C;
+    border-radius: 2px;
+}
+
+.fdsport-carousel-product-images .fdsport-carousel-images-indicators > li:hover {
+    cursor: pointer;
+ }
+
+.fdsport-carousel-product-images .fdsport-carousel-images-indicators > li > img {
+    width: 100%;
+}
+
+/* End Carousel : Product images */
 
 
 /* ************************************************************** *
@@ -358,24 +408,9 @@ a.fdsport-btn-show:visited {
     color: #444;
 }
 
-.fdsport-products-grid .fdsport-product-item .fdsport-item-colors {
-}
-
 .fdsport-products-grid .fdsport-product-item .fdsport-item-color {
-    display: inline-block;
     width: 15px;
     height: 15px;
-    border-radius: 50%;
-}
-
-.fdsport-products-grid .fdsport-product-item .fdsport-item-color-red {
-    background: #DD2222;
-}
-.fdsport-products-grid .fdsport-product-item .fdsport-item-color-blue {
-    background: #2222CC;
-}
-.fdsport-products-grid .fdsport-product-item .fdsport-item-color-yellow {
-    background: #EFEF22;
 }
 
 .fdsport-products-grid .fdsport-product-item .fdsport-btn-show {
@@ -500,6 +535,71 @@ a.fdsport-btn-show:visited {
 }
 
 
+#product-details {}
+
+#product-details .fdsport-carousel-product-images {
+}
+
+#product-details .fdsport-product-resume {
+    display: grid;
+}
+
+#product-details .fdsport-product-resume .fdsport-product-attributes {
+    grid-column: 1 / span 2;
+    grid-row: 1;
+
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-column-gap: 20px;
+    grid-row-gap: 10px;
+}
+
+#product-details .fdsport-product-attributes .fdsport-label {
+    font-weight: bold;
+}
+
+#product-details .fdsport-product-attributes select {
+    width: 50px;
+}
+
+#product-details .fdsport-product-resume .fdsport-item-price-promo {
+    grid-column: 2;
+    grid-row: 2;
+
+    margin-bottom: 20px;
+    text-align: right;
+}
+
+#product-details .fdsport-product-resume .fdsport-item-price {
+    margin-left: 10px;
+    font-size: 1.8em;
+    font-weight: bold;
+    color: #333333;
+}
+
+#product-details .fdsport-product-resume .fdsport-item-promo {
+    font-size: 1.2em;
+    color: #EE5555;
+    text-decoration: line-through;
+}
+
+#product-details .fdsport-product-resume .fdsport-product-favorite-wrapper {
+    grid-column: 1;
+    grid-row: 3;
+}
+
+#product-details .fdsport-product-resume .fdsport-product-addcart-wrapper {
+    grid-column: 2;
+    grid-row: 3;
+
+    text-align: right;
+}
+
+#product-details .fdsport-item-color {
+    width: 30px;
+    height: 30px;
+}
+
 
 /* ************************************************************** *
  *   PARTICULAR STYLES VIA MEDIA QUERIES
@@ -607,16 +707,6 @@ a.fdsport-btn-show:visited {
 
     .fdsport-products-grid .fdsport-product-item .fdsport-item-sizes {
         margin-bottom: 0px;
-    }
-
-    .fdsport-products-grid .fdsport-product-item .fdsport-item-colors {
-    }
-
-    .fdsport-products-grid .fdsport-product-item .fdsport-item-color {
-        display: inline-block;
-        width: 15px;
-        height: 15px;
-        border-radius: 50%;
     }
 
     .fdsport-products-grid .fdsport-product-item .fdsport-product-favorite-wrapper {

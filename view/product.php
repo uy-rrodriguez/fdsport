@@ -1,91 +1,104 @@
 <?php $this->layout('layout', ['title' => $title]) ?>
 
 
-<h1 class="fdsport-category-title"><?= $title ?></h1>
+<h1 class="fdsport-category-title"><?= $this->e($product['name']) ?></h1>
 
-<div class="fdsport-product fdsport-wrapper">
+<div id="product-details" class="fdsport-wrapper">
 
     <!-- Carousel Product images -->
     <div id="carousel-product-images" class="carousel slide fdsport-carousel fdsport-carousel-product-images">
-        <ol class="carousel-indicators">
-            <li data-target="#carousel-product-images" data-slide-to="0" class="active"></li>
-            <li data-target="#carousel-product-images" data-slide-to="1"></li>
-            <li data-target="#carousel-product-images" data-slide-to="2"></li>
-        </ol>
-
         <div class="carousel-inner">
-            <div class="carousel-item active">
-                <img class="d-block" data-src="holder.js/900x300?theme=sky&text=First event" alt="First event">
+
+            <?php foreach ($product['images'] as $i => $img): ?>
+
+            <div class="carousel-item <?= ($i == 0) ? 'active' : '' ?>">
+                <img class="d-block w-100" src="<?= $img ?>" alt="Image <?= $i ?> du produit">
             </div>
-            <div class="carousel-item">
-                <img class="d-block w-100" src="holder.js/900x300?theme=lava&text=Second event" alt="Second event">
-            </div>
-            <div class="carousel-item">
-                <img class="d-block w-100" src="holder.js/900x300?theme=vine&text=Third event" alt="Third event">
-            </div>
+
+            <?php endforeach; ?>
+
         </div>
-        <a class="carousel-control-prev" href="#carousel-events-home" role="button" data-slide="prev">
+
+        <a class="carousel-control-prev" href="#carousel-product-images" role="button" data-slide="prev">
             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
             <span class="sr-only">Previous</span>
         </a>
-        <a class="carousel-control-next" href="#carousel-events-home" role="button" data-slide="next">
+        <a class="carousel-control-next" href="#carousel-product-images" role="button" data-slide="next">
             <span class="carousel-control-next-icon" aria-hidden="true"></span>
             <span class="sr-only">Next</span>
         </a>
+
+        <ol class="carousel-indicators fdsport-carousel-images-indicators">
+            <?php foreach ($product['images'] as $i => $img): ?>
+
+                <li data-target="#carousel-product-images" data-slide-to="<?= $i ?>" class="<?= ($i == 0) ? 'active' : '' ?>">
+                    <img class="" src="<?= BASE_URL . '/assets/img/200x200.png' ?>">
+                </li>
+
+            <?php endforeach; ?>
+        </ol>
     </div>
 
-    <img src="<?= BASE_URL . '/assets/img/200x200.png' ?>" class="img-fluid fdsport-product-image"
-         alt="Image du produit <?= $this->e($product['name']) ?>">
+    <div class="fdsport-line"></div>
 
-    <ul class="fdsport-images-list">
+    <div class="row">
+        <div class="col-12 col-md-5 col-lg-4 fdsport-product-resume fdsport-wrapper">
+            <div class="fdsport-product-attributes">
+                <span class="fdsport-label">Taille</span>
+                <select class="fdsport-item-sizes">
+                    <?php foreach ($product['sizes'] as $size): ?>
+                        <option value="<?= $this->e($size) ?>"><?= $this->e($size) ?></option>
+                    <?php endforeach; ?>
+                </select>
 
-        <?php foreach ($product['images'] as $img): ?>
-        
-        <li class="col-sm-12 col-md-6 col-lg-4 col-xl-3 d-inline-flex flex-column justify-content-between fdsport-item">
-            <div class="d-md-none fdsport-line"></div>
-
-            <div class="fdsport-product-item">
-                <div class="d-none d-md-block fdsport-item-title-top"><?= $this->e($product['name']) ?></div>
-
-
-
-                <div class="fdsport-product-resume">
-                    <div class="d-md-none fdsport-item-title"><?= $this->e($product['name']) ?></div>
-                    <div class="fdsport-item-category"><?= $this->e($product['category']) ?></div>
-
-                    <div class="fdsport-item-price-promo">
-                        <span class="fdsport-item-price"><?= $this->e($product['price']) ?> €</span>
-                        <span class="fdsport-item-promo"><?= $this->e($product['discount']) ?>%</span>
-                    </div>
-
-                    <span class="fdsport-item-sizes"><?= $this->e($product['sizes']) ?></span>
-                    <div class="fdsport-item-colors">
-                        <div class="fdsport-item-color fdsport-item-color-blue"></div>
-                        <div class="fdsport-item-color fdsport-item-color-yellow"></div>
-                        <div class="fdsport-item-color fdsport-item-color-red"></div>
-                    </div>
-                </div>
-
-                <div class="fdsport-product-favorite-wrapper">
-                    <button class="btn fdsport-btn fdsport-btn-favorite fdsport-btn-favorite-<?= ($product['isFavorite'] ? 'true' : 'false') ?>">
-                        <i class="fas fa-star fdsport-favorite-star fdsport-favorite-iftrue"></i>
-                        <i class="far fa-star fdsport-favorite-star fdsport-favorite-iffalse"></i>
-                        <span><?= ($product['isFavorite'] ? 'En favoris' : 'Ajouter aux favoris') ?></span>
-                    </button>
-                </div>
-
-                <div class="fdsport-product-show-wrapper">
-                    <a href="<?= BASE_URL . '/product/show/' . $this->e($product['id']) ?>"
-                          class="btn fdsport-btn fdsport-btn-show">Détails</a>
-                </div>
-
-                <div class="fdsport-product-addcart-wrapper">
-                    <button class="btn fdsport-btn fdsport-btn-addcart">Ajouter au panier</button>
+                <span class="fdsport-label">Couleur</span>
+                <div class="fdsport-item-colors">
+                    <div class="fdsport-item-color fdsport-item-color-blue"></div>
+                    <div class="fdsport-item-color fdsport-item-color-yellow"></div>
+                    <div class="fdsport-item-color fdsport-item-color-red"></div>
                 </div>
             </div>
-        </li>
 
-        <?php endforeach; ?>
+            <div class="fdsport-item-price-promo">
+                <span class="fdsport-item-promo"><?= $this->e($product['discount']) ?>%</span>
+                <span class="fdsport-item-price"><?= $this->e($product['price']) ?> €</span>
+            </div>
 
-    </ul>
+            <div class="fdsport-product-favorite-wrapper">
+                <button class="btn fdsport-btn fdsport-btn-favorite fdsport-btn-favorite-<?= ($product['isFavorite'] ? 'true' : 'false') ?>">
+                    <i class="fas fa-star fdsport-favorite-star fdsport-favorite-iftrue"></i>
+                    <i class="far fa-star fdsport-favorite-star fdsport-favorite-iffalse"></i>
+                    <span><?= ($product['isFavorite'] ? 'En favoris' : 'Ajouter aux favoris') ?></span>
+                </button>
+            </div>
+
+            <div class="fdsport-product-addcart-wrapper">
+                <button class="btn fdsport-btn fdsport-btn-addcart">Ajouter au panier</button>
+            </div>
+        </div>
+
+        <div class="col-12 d-md-none">
+            <div class="fdsport-line"></div>
+        </div>
+
+        <div class="col-12 col-md-7 col-lg-8 fdsport-product-description fdsport-wrapper">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
+            magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+            consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
+            pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est
+            laborum.
+        </div>
+    </div>
+
+    <div class="fdsport-line"></div>
+
+    <?php
+        $this->insert('partials/productHList', [
+            'id'            => 'recommended-products',
+            'title'         => 'Pourraient vous intéresser',
+            'btnAllAction'  => BASE_URL . '/product/allRecommended',
+            'products'      => $recommended
+        ]);
+    ?>
+
 </div>

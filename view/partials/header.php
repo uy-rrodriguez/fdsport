@@ -15,7 +15,7 @@
 
 <!-- Header -->
 <div id="header" class="d-flex">
-    <div id="logo-desktop" class="d-none d-md-block"></div>
+    <a href="<?= BASE_URL ?>"><div id="logo-desktop" class="d-none d-md-block"></div></a>
 
     <nav class="navbar navbar-expand-md flex-column navbar-dark bg-dark fdsport-flex-item-fill">
         <div id="menu-top" class="d-flex flex-column flex-md-row-reverse fdsport-flex-item-fill">
