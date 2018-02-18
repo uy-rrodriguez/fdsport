@@ -29,7 +29,7 @@ CREATE TABLE uapv1604137.match (
 	id SERIAL,
 	id_team_home INT NULL,
 	id_team_visitor INT NULL,
-	date TIMESTAMP NULL,
+	date VARCHAR(256) NULL,
 	PRIMARY KEY (id),
 	CONSTRAINT fk_match_team1
 	FOREIGN KEY (id_team_home)
@@ -49,9 +49,9 @@ CREATE TABLE uapv1604137.product (
 	id_team INT NULL,
 	name VARCHAR(256) NULL,
 	description VARCHAR(256) NULL,
-	gender VARCHAR(1) NULL,
+	gender VARCHAR(3) NULL,
 	size VARCHAR(256) NULL,
-	price NUMERIC(2) NULL,
+	price NUMERIC(8, 2) NULL,
 	promotion INT NULL,
 	type VARCHAR(256) NULL,
 	brand VARCHAR(256) NULL,
@@ -73,7 +73,7 @@ CREATE TABLE uapv1604137.product (
 CREATE TABLE uapv1604137.ticket (
 	id SERIAL,
 	id_match INT NULL,
-	price NUMERIC(2) NULL,
+	price NUMERIC(8, 2) NULL,
 	stock INT NULL,
 	PRIMARY KEY (id),
 	CONSTRAINT fk_ticket_match

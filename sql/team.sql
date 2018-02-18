@@ -1,7 +1,5 @@
 DELETE FROM uapv1604137.team;
 
-
-
 INSERT INTO uapv1604137.team (id, id_sport, code, name, city, logo) VALUES (0, 0, 'PSG', 'Paris Saint-Germain', 'Paris', '');
 INSERT INTO uapv1604137.team (id, id_sport, code, name, city, logo) VALUES (1, 0, 'ASM', 'AS Monaco', 'Monaco', '');
 INSERT INTO uapv1604137.team (id, id_sport, code, name, city, logo) VALUES (2, 0, 'OM', 'Olympique de Marseille', 'Marseille', '');
