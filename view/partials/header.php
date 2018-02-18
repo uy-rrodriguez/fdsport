@@ -9,13 +9,15 @@
     <link rel="stylesheet" href="<?= BASE_URL ?>/assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>/assets/fontawesome/css/fontawesome-all.min.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/fdsport.css">
+
+    <script src="<?= BASE_URL ?>/assets/js/jquery-3.2.1.slim.min.js"></script>
 </head>
 
 <body>
 
 <!-- Header -->
 <div id="header" class="d-flex">
-    <a href="<?= BASE_URL ?>"><div id="logo-desktop" class="d-none d-md-block"></div></a>
+    <a href="<?= BASE_URL ?>/index"><div id="logo-desktop" class="d-none d-md-block"></div></a>
 
     <nav class="navbar navbar-expand-md flex-column navbar-dark bg-dark fdsport-flex-item-fill">
         <div id="menu-top" class="d-flex flex-column flex-md-row-reverse fdsport-flex-item-fill">
@@ -47,10 +49,10 @@
         <div id="menu-dropdown" class="collapse navbar-collapse">
             <ul class="navbar-nav nav-fill">
                 <li class="nav-item active">
-                    <a class="nav-link" href="#">Accueil</a>
+                    <a class="nav-link" href="<?= BASE_URL ?>/index">Accueil</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Billeterie</a>
+                    <a class="nav-link" href="<?= BASE_URL ?>/billeterie">Billeterie</a>
                 </li>
                 <li class="nav-item d-md-none">
                     <a class="nav-link" href="#">Supporter mon club</a>

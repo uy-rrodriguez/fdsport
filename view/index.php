@@ -18,18 +18,18 @@
     <div class="carousel-inner">
         <div class="carousel-item active">
             <img class="d-block w-100" data-src="holder.js/900x300?theme=sky&text=First slide" alt="First slide">
-            <button class="btn fdsport-btn fdsport-btn-all">Tous les matches</button>
-            <button class="btn fdsport-btn fdsport-btn-buy">Réserver</button>
+            <a href="<?= BASE_URL . '/billeterie' ?>" class="btn fdsport-btn fdsport-btn-all">Tous les matches</a>
+            <a href="<?= BASE_URL . '/billeterie/show/1' ?>" class="btn fdsport-btn fdsport-btn-buy">Réserver</a>
         </div>
         <div class="carousel-item">
             <img class="d-block w-100" src="holder.js/900x300?theme=lava&text=Second slide" alt="Second slide">
-            <button class="btn fdsport-btn fdsport-btn-all">Tous les matches</button>
-            <button class="btn fdsport-btn fdsport-btn-buy">Réserver</button>
+            <a href="<?= BASE_URL . '/billeterie' ?>" class="btn fdsport-btn fdsport-btn-all">Tous les matches</a>
+            <a href="<?= BASE_URL . '/billeterie/show/1' ?>" class="btn fdsport-btn fdsport-btn-buy">Réserver</a>
         </div>
         <div class="carousel-item">
             <img class="d-block w-100" src="holder.js/900x300?theme=vine&text=Third slide" alt="Third slide">
-            <button class="btn fdsport-btn fdsport-btn-all">Tous les matches</button>
-            <button class="btn fdsport-btn fdsport-btn-buy">Réserver</button>
+            <a href="<?= BASE_URL . '/billeterie' ?>" class="btn fdsport-btn fdsport-btn-all">Tous les matches</a>
+            <a href="<?= BASE_URL . '/billeterie/show/1' ?>" class="btn fdsport-btn fdsport-btn-buy">Réserver</a>
         </div>
     </div>
     <a class="carousel-control-prev" href="#carousel-matches-home" role="button" data-slide="prev">
@@ -50,9 +50,60 @@
 </div>
 
 <div id="team-products-change-wrapper" class="d-flex fdsport-wrapper">
-    <h5 class="fdsport-flex-item-fill">L'OM n'est pas votre club ?</h5>
-    <button class="btn fdsport-btn fdsport-btn-change-team">Changer de club</button>
+    <h5 class="fdsport-flex-item-fill"><?= $team_geoloc ?> n'est pas votre club ?</h5>
+    <button id="btn-changeteam-home" class="btn fdsport-btn fdsport-btn-change-team">Changer de club</button>
 </div>
+
+<!-- Change team modal -->
+<div id="modal-changeteam-home" class="modal fade fdsport-modal fdsport-modal-changeteam">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Sélectionnez votre club</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Annuler">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="form-group">
+                    <select name="home-sport" class="form-control">
+                        <?php foreach ($sports as $sport): ?>
+
+                            <option value="<?= $sport ?>" <?= ($sport_geoloc == $sport ? 'selected' : '') ?> >
+                                <?= $sport ?>
+                            </option>
+
+                        <?php endforeach; ?>
+                    </select>
+
+                    <select name="home-team" class="form-control">
+                    <?php foreach ($teams as $team): ?>
+
+                        <option value="<?= $team ?>" <?= ($team_geoloc == $team ? 'selected' : '') ?> >
+                            <?= $team ?>
+                        </option>
+
+                    <?php endforeach; ?>
+                    </select>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Valider</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script language="JavaScript">
+    $(function () {
+        $("#btn-changeteam-home").click(function () {
+            $("#modal-changeteam-home").modal();
+        });
+    })
+</script>
+
 
 <div class="fdsport-line"></div>
 
