@@ -1,3 +1,6 @@
+<?php $this->layout('layout', ['title' => $title]) ?>
+
+
 <div id="logo-mobile-wrapper" class="d-md-none fdsport-wrapper">
     <div id="logo-mobile"></div>
 </div>
@@ -5,7 +8,7 @@
 <div class="d-md-none fdsport-line"></div>
 
 <!-- Carousel Next matches -->
-<div id="carousel-matches-home" class="carousel slide fdsport-carousel-matches fdsport-wrapper"
+<div id="carousel-matches-home" class="carousel slide fdsport-carousel fdsport-carousel-matches fdsport-wrapper"
      data-ride="carousel">
     <ol class="carousel-indicators">
         <li data-target="#carousel-matches-home" data-slide-to="0" class="active"></li>
@@ -54,7 +57,7 @@
 <div class="fdsport-line"></div>
 
 <!-- Carousel Next events -->
-<div id="carousel-events-home" class="carousel slide fdsport-carousel-events fdsport-wrapper"
+<div id="carousel-events-home" class="carousel slide fdsport-carousel fdsport-carousel-events fdsport-wrapper"
      data-ride="carousel" data-interval="7000">
     <ol class="carousel-indicators">
         <li data-target="#carousel-events-home" data-slide-to="0" class="active"></li>
@@ -82,80 +85,18 @@
     </a>
 </div>
 
-<div class="fdsport-line"></div>
 
-<div id="bestprices-home" class="fdsport-products-h-list fdsport-wrapper">
-    <h3 class="fdsport-list-title">Petits prix</h3>
-    <ul class="fdsport-list">
-        <li class="d-inline-flex flex-column justify-content-between fdsport-item">
-            <span class="fdsport-item-title">Titre</span>
-            <span class="fdsport-item-price">24,90 €</span>
-            <span class="fdsport-item-promo">-30%</span>
-        </li>
-        <li class="d-inline-flex flex-column justify-content-between fdsport-item">
-            <span class="fdsport-item-title">Titre</span>
-            <span class="fdsport-item-price">24,90 €</span>
-            <span class="fdsport-item-promo">-30%</span>
-        </li>
-        <li class="d-inline-flex flex-column justify-content-between fdsport-item">
-            <span class="fdsport-item-title">Titre</span>
-            <span class="fdsport-item-price">24,90 €</span>
-            <span class="fdsport-item-promo">-30%</span>
-        </li>
-        <li class="d-inline-flex flex-column justify-content-between fdsport-item">
-            <span class="fdsport-item-title">Titre</span>
-            <span class="fdsport-item-price">24,90 €</span>
-            <span class="fdsport-item-promo">-30%</span>
-        </li>
-        <li class="d-inline-flex flex-column justify-content-between fdsport-item">
-            <span class="fdsport-item-title">Titre</span>
-            <span class="fdsport-item-price">24,90 €</span>
-            <span class="fdsport-item-promo">-30%</span>
-        </li>
-        <li class="d-inline-flex flex-column justify-content-between fdsport-item">
-            <span class="fdsport-item-title">Titre</span>
-            <span class="fdsport-item-price">24,90 €</span>
-            <span class="fdsport-item-promo">-30%</span>
-        </li>
-    </ul>
-    <button class="btn fdsport-btn fdsport-btn-all">Voir tout</button>
-</div>
+<?php foreach ($categories as $category): ?>
 
-<div class="fdsport-line"></div>
+    <div class="fdsport-line"></div>
 
-<div id="forwomen-home" class="fdsport-products-h-list fdsport-wrapper">
-    <h3 class="fdsport-list-title">Pour elles</h3>
-    <ul class="fdsport-list">
-        <li class="d-inline-flex flex-column justify-content-between fdsport-item">
-            <span class="fdsport-item-title">Titre</span>
-            <span class="fdsport-item-price">24,90 €</span>
-            <span class="fdsport-item-promo">-30%</span>
-        </li>
-        <li class="d-inline-flex flex-column justify-content-between fdsport-item">
-            <span class="fdsport-item-title">Titre</span>
-            <span class="fdsport-item-price">24,90 €</span>
-            <span class="fdsport-item-promo">-30%</span>
-        </li>
-        <li class="d-inline-flex flex-column justify-content-between fdsport-item">
-            <span class="fdsport-item-title">Titre</span>
-            <span class="fdsport-item-price">24,90 €</span>
-            <span class="fdsport-item-promo">-30%</span>
-        </li>
-        <li class="d-inline-flex flex-column justify-content-between fdsport-item">
-            <span class="fdsport-item-title">Titre</span>
-            <span class="fdsport-item-price">24,90 €</span>
-            <span class="fdsport-item-promo">-30%</span>
-        </li>
-        <li class="d-inline-flex flex-column justify-content-between fdsport-item">
-            <span class="fdsport-item-title">Titre</span>
-            <span class="fdsport-item-price">24,90 €</span>
-            <span class="fdsport-item-promo">-30%</span>
-        </li>
-        <li class="d-inline-flex flex-column justify-content-between fdsport-item">
-            <span class="fdsport-item-title">Titre</span>
-            <span class="fdsport-item-price">24,90 €</span>
-            <span class="fdsport-item-promo">-30%</span>
-        </li>
-    </ul>
-    <button class="btn fdsport-btn fdsport-btn-all">Voir tout</button>
-</div>
+    <?php
+        $this->insert('partials/productHList', [
+            'id'            => 'home-category-' . $category['id'],
+            'title'         => $category['title'],
+            'btnAllAction'  => $category['btnAllAction'],
+            'products'      => $category['products']
+        ]);
+    ?>
+
+<?php endforeach; ?>

@@ -2,20 +2,20 @@
 <html lang="fr">
 
 <head>
-    <title>FD Sport</title>
+    <title>FD Sport - <?= $this->e($title) ?></title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="assets/fontawesome/css/fontawesome-all.min.css">
-    <link rel="stylesheet" href="assets/css/fdsport.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/fontawesome/css/fontawesome-all.min.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/fdsport.css">
 </head>
 
 <body>
 
 <!-- Header -->
 <div id="header" class="d-flex">
-    <div id="logo-desktop" class="d-none d-md-block"></div>
+    <a href="<?= BASE_URL ?>"><div id="logo-desktop" class="d-none d-md-block"></div></a>
 
     <nav class="navbar navbar-expand-md flex-column navbar-dark bg-dark fdsport-flex-item-fill">
         <div id="menu-top" class="d-flex flex-column flex-md-row-reverse fdsport-flex-item-fill">
