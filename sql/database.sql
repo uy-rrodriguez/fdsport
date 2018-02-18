@@ -1,3 +1,4 @@
+DROP TABLE uapv1604137.profiling;
 DROP TABLE uapv1604137.ticket;
 DROP TABLE uapv1604137.product;
 DROP TABLE uapv1604137.match;
@@ -81,4 +82,16 @@ CREATE TABLE uapv1604137.ticket (
 	REFERENCES match(id)
 	ON DELETE NO ACTION
 	ON UPDATE NO ACTION
+);
+
+CREATE TABLE uapv1604137.profiling (
+    id SERIAL,
+    id_product INT NULL,
+    profil VARCHAR(2048),
+    PRIMARY KEY (id),
+    CONSTRAINT fk_profiling_product
+    FOREIGN KEY (id_product)
+    REFERENCES product(id)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
 );

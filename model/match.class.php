@@ -24,7 +24,7 @@ class match
 	*/
 	public $id_team_visitor;
 
-	/** @Column(type="datetime") */
+	/** @Column(type="string", length=2000) */
 	public $date;
 
 }
