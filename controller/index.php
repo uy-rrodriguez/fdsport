@@ -7,6 +7,12 @@ class index extends Controller {
     }
     
     public function index() {
+        $sports = array('Football', 'Rugby', 'Handball');
+        $teams = array('Olympique de Marseille', 'Olympique Lyonnais', 'Paris Saint-Germain');
+
+        $sport_geoloc = 'Football';
+        $team_geoloc = 'Olympique Lyonnais';
+
         $products = array();
         for ($i = 1; $i <= 10; $i++) {
             $products[] = array(
@@ -29,6 +35,13 @@ class index extends Controller {
         }
         
         // Render a template
-        echo $this->plates->render('index', ['title' => 'Index', 'categories' => $cats]);
+        echo $this->plates->render('index', [
+            'title' => 'Accueil',
+            'sport_geoloc' => $sport_geoloc,
+            'team_geoloc' => $team_geoloc,
+            'sports' => $sports,
+            'teams' => $teams,
+            'categories' => $cats
+        ]);
     }
 }

@@ -13,7 +13,6 @@
     </div>
 </div>
 
-<script src="<?= BASE_URL ?>/assets/js/jquery-3.2.1.slim.min.js"></script>
 <script src="<?= BASE_URL ?>/assets/bootstrap/js/bootstrap.min.js"></script>
 <script src="<?= BASE_URL ?>/assets/js/holder.js"></script>
 

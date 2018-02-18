@@ -3,7 +3,7 @@
 
 <h1 class="fdsport-category-title"><?= $this->e($product['name']) ?></h1>
 
-<div id="product-details" class="fdsport-wrapper">
+<div class="fdsport-item-details fdsport-wrapper">
 
     <!-- Carousel Product images -->
     <div id="carousel-product-images" class="carousel slide fdsport-carousel fdsport-carousel-product-images">
@@ -12,7 +12,7 @@
             <?php foreach ($product['images'] as $i => $img): ?>
 
             <div class="carousel-item <?= ($i == 0) ? 'active' : '' ?>">
-                <img class="d-block w-100" src="<?= $img ?>" alt="Image <?= $i ?> du produit">
+                <img src="<?= $img ?>" alt="Image <?= $i ?> du produit">
             </div>
 
             <?php endforeach; ?>
@@ -42,10 +42,10 @@
     <div class="fdsport-line"></div>
 
     <div class="row">
-        <div class="col-12 col-md-5 col-lg-4 fdsport-product-resume fdsport-wrapper">
-            <div class="fdsport-product-attributes">
+        <div class="col-12 col-md-6 col-lg-5 fdsport-item-actions fdsport-wrapper">
+            <div class="fdsport-item-attributes">
                 <span class="fdsport-label">Taille</span>
-                <select class="fdsport-item-sizes">
+                <select class="form-control fdsport-product-sizes">
                     <?php foreach ($product['sizes'] as $size): ?>
                         <option value="<?= $this->e($size) ?>"><?= $this->e($size) ?></option>
                     <?php endforeach; ?>
@@ -64,16 +64,18 @@
                 <span class="fdsport-item-price"><?= $this->e($product['price']) ?> €</span>
             </div>
 
-            <div class="fdsport-product-favorite-wrapper">
-                <button class="btn fdsport-btn fdsport-btn-favorite fdsport-btn-favorite-<?= ($product['isFavorite'] ? 'true' : 'false') ?>">
-                    <i class="fas fa-star fdsport-favorite-star fdsport-favorite-iftrue"></i>
-                    <i class="far fa-star fdsport-favorite-star fdsport-favorite-iffalse"></i>
-                    <span><?= ($product['isFavorite'] ? 'En favoris' : 'Ajouter aux favoris') ?></span>
-                </button>
-            </div>
+            <div class="d-flex flex-row flex-wrap justify-content-between align-items-center">
+                <div class="fdsport-item-favorite-wrapper">
+                    <button class="btn fdsport-btn fdsport-btn-favorite fdsport-btn-favorite-<?= ($product['isFavorite'] ? 'true' : 'false') ?>">
+                        <i class="fas fa-star fdsport-favorite-star fdsport-favorite-iftrue"></i>
+                        <i class="far fa-star fdsport-favorite-star fdsport-favorite-iffalse"></i>
+                        <span><?= ($product['isFavorite'] ? 'En favoris' : 'Ajouter aux favoris') ?></span>
+                    </button>
+                </div>
 
-            <div class="fdsport-product-addcart-wrapper">
-                <button class="btn fdsport-btn fdsport-btn-addcart">Ajouter au panier</button>
+                <div class="fdsport-item-addcart-wrapper">
+                    <button class="btn fdsport-btn fdsport-btn-addcart">Ajouter au panier</button>
+                </div>
             </div>
         </div>
 
@@ -81,12 +83,14 @@
             <div class="fdsport-line"></div>
         </div>
 
-        <div class="col-12 col-md-7 col-lg-8 fdsport-product-description fdsport-wrapper">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-            magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-            consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-            pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est
-            laborum.
+        <div class="col-12 col-md-6 col-lg-7 fdsport-item-description-wrapper fdsport-wrapper">
+            <div class="fdsport-item-description">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
+                magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+                consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
+                pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est
+                laborum.
+            </div>
         </div>
     </div>
 
