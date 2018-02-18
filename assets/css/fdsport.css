@@ -685,6 +685,11 @@ a.fdsport-btn-show:visited {
     margin: 10px auto;
 }
 
+#profiler-graph {
+    height: 600px;
+    background: #F6F6F6;
+}
+
 
 
 /* ************************************************************** *

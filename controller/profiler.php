@@ -8,30 +8,56 @@ class profiler extends Controller {
     }
     
     public function index() {
-        $products = $this->getTestProducts();
-        $products2D = $this->getProducts2D($products);
-        $productsJSON = $this->getNodesJSON($products2D);
+        $productsFilename = $this->processProfilingProducts();
 
         // Render a template
         echo $this->plates->render('profiler', [
             'title' => 'Graphe de profiling',
-            'products' => $productsJSON
+            'productsFilename' => BASE_URL . '/' . $productsFilename
         ]);
     }
 
     public function data() {
-        $products = $this->getTestProducts();
+        $this->processProfilingProducts();
+    }
 
-        // Render a template
-        echo $this->plates->render('profiler', [
-            'title' => 'Graphe de profiling',
-            'products' => $products
-        ]);
+    /**
+     * Process the profiling data for products and returns the name of the file where
+     * the resulting JSON will be stored.
+     *
+     * @return string Produced JSON data
+     */
+    public function processProfilingProducts() {
+        $products = $this->getTestProducts();
+        $products2D = $this->getProducts2D($products);
+        $productsJSON = $this->getNodesJSON($products2D);
+
+        $filename = 'profiling_products.json';
+        file_put_contents($filename, $productsJSON);
+
+        return $filename;
+    }
+
+    /**
+     * Process the profiling data for users and returns the name of the file where
+     * the resulting JSON will be stored.
+     *
+     * @return string Produced JSON data
+     */
+    public function processProfilingUsers() {
+        $products = $this->getTestProducts();
+        $products2D = $this->getProducts2D($products);
+        $productsJSON = $this->getNodesJSON($products2D);
+
+        $filename = 'profiling_users.json';
+        file_put_contents($filename, $productsJSON);
+
+        return $filename;
     }
 
     public function getTestProducts() {
         $products = array();
-        for ($i = 1; $i <= 5; $i++) {
+        for ($i = 1; $i <= 20; $i++) {
             $products[] = array(
                 'id' => $i,
                 'title' => 'Produit ' . $i,
@@ -50,7 +76,7 @@ class profiler extends Controller {
 
         // Define 5 static products
 
-        // Man - Young adult - CSP++ - Nice - Rugby
+        // Man - Adult - CSP++ - Nice - Rugby
         $values = array(
             0, 0, 1, 0, 0,
             0, 1, 0,
@@ -59,7 +85,7 @@ class profiler extends Controller {
             0, 0, 0, 0, 0, 0, 0, 0, 1
         );
         $products[0]['name'] = 'Man - Young adult - CSP++ - Nice - Rugby';
-        $products[0]['profilingData']->setVars(array_combine($variables, $values));
+        $products[0]['profilingData']->setStaticVars(array_combine($variables, $values));
 
         // Woman - Young - CSP- - Marseille - Football
         $values = array(
@@ -70,7 +96,7 @@ class profiler extends Controller {
             0, 0, 0, 0, 0, 0, 0, 1, 0
         );
         $products[1]['name'] = 'Woman - Young - CSP- - Marseille - Football';
-        $products[1]['profilingData']->setVars(array_combine($variables, $values));
+        $products[1]['profilingData']->setStaticVars(array_combine($variables, $values));
 
         // Man - Adult - CSP+ - Clermont - Rugby
         $values = array(
@@ -81,7 +107,7 @@ class profiler extends Controller {
             0, 0, 0, 1, 0, 0, 0, 0, 0
         );
         $products[2]['name'] = 'Man - Adult - CSP+ - Clermont - Rugby';
-        $products[2]['profilingData']->setVars(array_combine($variables, $values));
+        $products[2]['profilingData']->setStaticVars(array_combine($variables, $values));
 
         // Woman - Old adult - CSP+ - Montpellier - Handball
         $values = array(
@@ -92,7 +118,7 @@ class profiler extends Controller {
             0, 0, 0, 0, 0, 0, 1, 0, 0
         );
         $products[3]['name'] = 'Woman - Old adult - CSP+ - Montpellier - Handball';
-        $products[3]['profilingData']->setVars(array_combine($variables, $values));
+        $products[3]['profilingData']->setStaticVars(array_combine($variables, $values));
 
         // Man - Young adult - CSP~ - Lyon - Football
         $values = array(
@@ -103,7 +129,7 @@ class profiler extends Controller {
             0, 0, 0, 0, 1, 0, 0, 0, 0
         );
         $products[4]['name'] = 'Man - Young adult - CSP~ - Lyon - Football';
-        $products[4]['profilingData']->setVars(array_combine($variables, $values));
+        $products[4]['profilingData']->setStaticVars(array_combine($variables, $values));
 
         return $products;
     }
@@ -112,8 +138,10 @@ class profiler extends Controller {
         // Principal Component Analysis to get the items represented in two dimensions
         $points = array();
         foreach ($products as $product) {
-            $coords = array_values($product['profilingData']->getVars());
-            $points[] = $coords;
+            if (! $product['profilingData']->isUnset()) {
+                $coords = array_values($product['profilingData']->getVars());
+                $points[] = $coords;
+            }
         }
 
         $pca = new PCA\PCA($points);
@@ -123,29 +151,55 @@ class profiler extends Controller {
 
         $products2D = array();
         foreach ($products as $i => $product) {
-            $products2D[] = array (
-                'id' => $product['id'],
-                'name' => $product['name'],
-                'x' => $pcaResult[$i][0],
-                'y' => $pcaResult[$i][1]
-            );
+            if (! $product['profilingData']->isUnset()) {
+                $products2D[] = array(
+                    'id' => $product['id'],
+                    'name' => $product['name'],
+                    'profilingData' => $product['profilingData'],
+                    'x' => $pcaResult[$i][0],
+                    'y' => $pcaResult[$i][1]
+                );
+            }
         }
 
         return $products2D;
     }
 
     public function getNodesJSON($products2D) {
-        $nodes = array();
+        // Max and min values helps us center the origin of coordinates
+        $minX = false; $maxX = false; $minY = false; $maxY = false;
 
+        $nodes = array();
         foreach ($products2D as $i => $product) {
-            $nodes[] = array (
+            $n = array (
                 'id' => $product['id'],
                 'label' => $product['name'],
-                'x' => $product['x'],
+                'x' => 8 * $product['x'],
                 'y' => $product['y'],
-                'size' => 1
+                'size' => 3
             );
+
+            if ($product['profilingData']->isStatic()) {
+                $n['size'] = 2;
+                $n['color'] = '#666';
+            }
+
+            $nodes[] = $n;
+
+            if ($minX === false || $n['x'] < $minX) $minX = $n['x'];
+            if ($maxX === false || $n['x'] > $maxX) $maxX = $n['x'];
+            if ($minY === false || $n['y'] < $minY) $minY = $n['y'];
+            if ($maxY === false || $n['y'] > $maxY) $maxY = $n['y'];
         }
+
+        $nodes[] = array (
+            'id' => '0',
+            'label' => '',
+            'x' => ($maxX + $minX) / 2,
+            'y' => ($maxY + $minY) / 2,
+            'size' => 1,
+            'color' => '#AAA'
+        );
 
         $data = array(
             'edges' => array(),
@@ -158,8 +212,8 @@ class profiler extends Controller {
 
 class ProfilingItem {
     private $vars = array();
-    private $isStatic = false;
-    private $isUnset = true;
+    public $static = false;
+    public $unset = true;
 
     function __construct() {}
 
@@ -180,15 +234,25 @@ class ProfilingItem {
         return $this->vars;
     }
 
-    public function setVars($vars) {
+    public function isUnset() {
+        return $this->unset;
+    }
+
+    public function isStatic() {
+        return $this->static;
+    }
+
+    public function setStaticVars($vars) {
         $this->vars = array();
         $this->vars = array_merge($this->vars, $vars);
+        $this->unset = false;
+        $this->static = true;
     }
 
     public function copyVars(ProfilingItem $origin) {
-        if ($this->isStatic) return;
+        if ($this->static) return;
 
-        $this->isUnset = false;
+        $this->unset = false;
         $this->vars = array();
         foreach ($origin->vars as $name => $value) {
             $this->$name = $value;
@@ -196,12 +260,12 @@ class ProfilingItem {
     }
 
     public function moveToMiddle(ProfilingItem $previous) {
-        if ($this->isStatic) {
-            if (! $previous->isStatic)
+        if ($this->static) {
+            if (! $previous->static)
                 $previous->moveToMiddle($this);
         }
-        else if ($this->isUnset) {
-            $this->isUnset = false;
+        else if ($this->unset) {
+            $this->unset = false;
             $this->copyVars($previous);
         }
         else {
