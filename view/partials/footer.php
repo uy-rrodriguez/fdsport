@@ -15,6 +15,8 @@
 
 <script src="<?= BASE_URL ?>/assets/bootstrap/js/bootstrap.min.js"></script>
 <script src="<?= BASE_URL ?>/assets/js/holder.js"></script>
+<script src="<?= BASE_URL ?>/assets/js/sigma.min.js"></script>
+<script src="<?= BASE_URL ?>/assets/js/sigma.parsers.json.min.js"></script>
 
 </body>
 </html>
