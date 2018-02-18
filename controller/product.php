@@ -70,7 +70,7 @@ class productCtrl extends Controller {
                         ? true
                         : false;
 
-
+        /*
         // Title for the new page
         $title = 'Liste de produits';
         if ($subcat !== 0)
@@ -78,8 +78,6 @@ class productCtrl extends Controller {
 
         else if ($recommended == true)
             $title = 'Produits recommandés';
-
-
         
         // Get products from DB
         $products = array();
@@ -95,30 +93,67 @@ class productCtrl extends Controller {
                 'image' => 'holder.js/200x200?text=IMG'
             );
         }
+        */
         
-        /*
         $productsInDB = productTable::getProducts();
         
+        $title = 'Liste de produits';
         $products = array();
         
-        foreach ($productsInDB as $productInDB)
+        if ($subcat !== 0)
         {
             
-            if ($productInDB->type == $subcat)
+            $title = $subcat;
+            
+            foreach ($productsInDB as $productInDB)
             {
                 
-                $products[] = $productInDB;
-                
-            }
-            else if ()
-            {
-                
-                $products[] = $productInDB;
+                if ($productInDB->type == $subcat)
+                {
+                    
+                    $products[] = array(
+                        'id' => $productInDB->id,
+                        'name' => $productInDB->name,
+                        'price' => $productInDB->price,
+                        'discount' => $productInDB->promotion,
+                        'category' => $productInDB->type,
+                        'sizes' => $productInDB->size,
+                        'isFavorite' => ($productInDB->id % 2 == 0 ? true : false),
+                        'image' => 'holder.js/200x200?text=IMG'
+                    );
+                    
+                }
                 
             }
             
         }
-        */
+        else if ($recommended == true)
+        {
+            
+            $title = 'Produits recommandés';
+            
+            foreach ($productsInDB as $productInDB)
+            {
+                
+                if ($productInDB->type == $subcat)
+                {
+                    
+                    $products[] = array(
+                        'id' => $productInDB->id,
+                        'name' => $productInDB->name,
+                        'price' => $productInDB->price,
+                        'discount' => $productInDB->promotion,
+                        'category' => $productInDB->type,
+                        'sizes' => $productInDB->size,
+                        'isFavorite' => ($productInDB->id % 2 == 0 ? true : false),
+                        'image' => 'holder.js/200x200?text=IMG'
+                    );
+                    
+                }
+                
+            }
+            
+        }
 
         echo $this->plates->render('product_list', ['title' => $title, 'products' => $products]);
     }

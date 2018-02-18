@@ -23,11 +23,14 @@ class categoryCtrl extends Controller {
         $productsInDB = productTable::getProducts();
         
         $products = array();
+        $category = 'Tous les produits';
         
         switch ($id)
         {
             
             case 1:
+            
+                $category = 'Petit prix';
                 
                 foreach ($productsInDB as $productInDB)
                 {
@@ -51,6 +54,8 @@ class categoryCtrl extends Controller {
                 
             case 2:
             
+                $category = 'Pour elles';
+            
                 foreach ($productsInDB as $productInDB)
                 {
                     
@@ -73,6 +78,8 @@ class categoryCtrl extends Controller {
                 
             case 3:
             
+                $category = 'Nos marques';
+            
                 foreach ($productsInDB as $productInDB)
                 {
                     
@@ -93,7 +100,7 @@ class categoryCtrl extends Controller {
             
                 break;
                 
-            case 4:
+            default:
             
                 foreach ($productsInDB as $productInDB)
                 {
@@ -149,7 +156,7 @@ class categoryCtrl extends Controller {
             $subcats[] = array(
                 'id'            =>  $i,
                 'name'          =>  ucfirst($key),
-                'btnAllAction'  =>  BASE_URL . '/product/allBySubcategory/' . $id,
+                'btnAllAction'  =>  BASE_URL . '/product/allBySubcategory/' . $key,
                 'products'       =>  $value
             );
             
@@ -157,6 +164,10 @@ class categoryCtrl extends Controller {
             
         }
         
+        /*
         echo $this->plates->render('category', ['title' => 'Category '.$id, 'subcategories' => $subcats]);
+        */
+        
+        echo $this->plates->render('category', ['title' => $category, 'subcategories' => $subcats]);
     }
 }
