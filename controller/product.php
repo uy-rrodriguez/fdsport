@@ -1,12 +1,14 @@
 <?php
 require_once 'controller.php';
 
-class product extends Controller {
+class productCtrl extends Controller {
     function __construct($plates) {
         parent::__construct($plates);
     }
 
     public function show($id) {
+        
+        /*
         // Product data
         $product = array(
             'id' => $id,
@@ -22,6 +24,25 @@ class product extends Controller {
                 'holder.js/200x200?text=IMG 3'
             ),
             'description' => 'Description du produit ' . $id
+        );
+        */
+        
+        $productInDB = productTable::getProductById($id);
+        
+        $product = array(
+            'id'            =>  $productInDB->id,
+            'name'          =>  $productInDB->name,
+            'price'         =>  $productInDB->price,
+            'discount'      =>  $productInDB->promotion,
+            'category'      =>  $productInDB->type,
+            'sizes'         =>  explode('|', $productInDB->size),
+            'isFavorite'    =>  ($id % 2 == 0 ? true : false),
+            'images'        =>  array(
+                'holder.js/200x200?text=IMG 1',
+                'holder.js/200x200?text=IMG 2',
+                'holder.js/200x200?text=IMG 3'
+            ),
+            'description'   =>  $productInDB->description
         );
 
         // Associated products
@@ -59,6 +80,7 @@ class product extends Controller {
             $title = 'Produits recommandés';
 
 
+        
         // Get products from DB
         $products = array();
         for ($i = 1; $i <= 10; $i++) {
@@ -73,6 +95,30 @@ class product extends Controller {
                 'image' => 'holder.js/200x200?text=IMG'
             );
         }
+        
+        /*
+        $productsInDB = productTable::getProducts();
+        
+        $products = array();
+        
+        foreach ($productsInDB as $productInDB)
+        {
+            
+            if ($productInDB->type == $subcat)
+            {
+                
+                $products[] = $productInDB;
+                
+            }
+            else if ()
+            {
+                
+                $products[] = $productInDB;
+                
+            }
+            
+        }
+        */
 
         echo $this->plates->render('product_list', ['title' => $title, 'products' => $products]);
     }

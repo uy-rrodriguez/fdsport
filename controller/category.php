@@ -1,12 +1,14 @@
 <?php
 require_once 'controller.php';
 
-class category extends Controller {
+class categoryCtrl extends Controller {
     function __construct($plates) {
         parent::__construct($plates);
     }
     
     public function show($id) {
+        
+        /*
         $products = array();
         for ($i = 1; $i <= 10; $i++) {
             $products[] = array(
@@ -16,7 +18,101 @@ class category extends Controller {
                 'discount' => $i
             );
         }
+        */
         
+        $productsInDB = productTable::getProducts();
+        
+        $products = array();
+        
+        switch ($id)
+        {
+            
+            case 1:
+                
+                foreach ($productsInDB as $productInDB)
+                {
+                    
+                    if ($productInDB->price < 50)
+                    {
+                        
+                        $products[] = array(
+                            'id'        =>  $productInDB->id,
+                            'name'      =>  $productInDB->name,
+                            'price'     =>  $productInDB->price,
+                            'discount'  =>  $productInDB->promotion,
+                            'type'      =>  $productInDB->type
+                        );
+                        
+                    }
+                    
+                }
+            
+                break;
+                
+            case 2:
+            
+                foreach ($productsInDB as $productInDB)
+                {
+                    
+                    if ($productInDB->gender == 'F')
+                    {
+                        
+                        $products[] = array(
+                            'id'        =>  $productInDB->id,
+                            'name'      =>  $productInDB->name,
+                            'price'     =>  $productInDB->price,
+                            'discount'  =>  $productInDB->promotion,
+                            'type'      =>  $productInDB->type
+                        );
+                        
+                    }
+                    
+                }
+            
+                break;
+                
+            case 3:
+            
+                foreach ($productsInDB as $productInDB)
+                {
+                    
+                    if ($productInDB->brand != '')
+                    {
+                        
+                        $products[] = array(
+                            'id'        =>  $productInDB->id,
+                            'name'      =>  $productInDB->name,
+                            'price'     =>  $productInDB->price,
+                            'discount'  =>  $productInDB->promotion,
+                            'type'      =>  $productInDB->type
+                        );
+                        
+                    }
+                    
+                }
+            
+                break;
+                
+            case 4:
+            
+                foreach ($productsInDB as $productInDB)
+                {
+                    
+                    $products[] = array(
+                        'id'        =>  $productInDB->id,
+                        'name'      =>  $productInDB->name,
+                        'price'     =>  $productInDB->price,
+                        'discount'  =>  $productInDB->promotion,
+                        'type'      =>  $productInDB->type
+                    );
+                    
+                }
+            
+                break;
+            
+        }
+        
+        /*
         $subcats = array();
         for ($i = 1; $i <= 3; $i++) {
             $subcats[] = array(
@@ -25,6 +121,40 @@ class category extends Controller {
                 'btnAllAction' => BASE_URL . '/product/allBySubcategory/' . $id,
                 'products' => $products
             );
+        }
+        */
+        
+        $sortedProducts = array();
+        
+        foreach ($products as $product)
+        {
+            
+            if (!array_key_exists($product['type'], $sortedProducts))
+            {
+                
+                $sortedProducts[$product['type']] = array();
+                
+            }
+            
+            array_push($sortedProducts[$product['type']], $product);
+            
+        }
+        
+        $subcats = array();
+        $i = 1;
+        
+        foreach ($sortedProducts as $key => $value)
+        {
+            
+            $subcats[] = array(
+                'id'            =>  $i,
+                'name'          =>  ucfirst($key),
+                'btnAllAction'  =>  BASE_URL . '/product/allBySubcategory/' . $id,
+                'products'       =>  $value
+            );
+            
+            $i++;
+            
         }
         
         echo $this->plates->render('category', ['title' => 'Category '.$id, 'subcategories' => $subcats]);

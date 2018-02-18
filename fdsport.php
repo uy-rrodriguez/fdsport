@@ -32,7 +32,8 @@ $id = (count($request) >= 3 ? $request[2] : false);
 require_once 'controller/' . $controller . '.php';
 
 // Create new controller passing the Plates instance
-$controllerInst = new $controller($plates);
+$controllerClass = $controller . 'Ctrl';
+$controllerInst = new $controllerClass($plates);
 
 // Call corresponding controller method
 if ($id) {
