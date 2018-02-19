@@ -1,7 +1,7 @@
 <?php
 require_once 'controller.php';
 
-class billeterie extends Controller {
+class billeterieCtrl extends Controller {
     function __construct($plates) {
         parent::__construct($plates);
     }

@@ -1,12 +1,14 @@
 <?php
 require_once 'controller.php';
 
-class product extends Controller {
+class productCtrl extends Controller {
     function __construct($plates) {
         parent::__construct($plates);
     }
 
     public function show($id) {
+        
+        /*
         // Product data
         $product = array(
             'id' => $id,
@@ -22,6 +24,25 @@ class product extends Controller {
                 'holder.js/200x200?text=IMG 3'
             ),
             'description' => 'Description du produit ' . $id
+        );
+        */
+        
+        $productInDB = productTable::getProductById($id);
+        
+        $product = array(
+            'id'            =>  $productInDB->id,
+            'name'          =>  $productInDB->name,
+            'price'         =>  $productInDB->price,
+            'discount'      =>  $productInDB->promotion,
+            'category'      =>  $productInDB->type,
+            'sizes'         =>  explode('|', $productInDB->size),
+            'isFavorite'    =>  ($id % 2 == 0 ? true : false),
+            'images'        =>  array(
+                'holder.js/200x200?text=IMG 1',
+                'holder.js/200x200?text=IMG 2',
+                'holder.js/200x200?text=IMG 3'
+            ),
+            'description'   =>  $productInDB->description
         );
 
         // Associated products
@@ -49,7 +70,7 @@ class product extends Controller {
                         ? true
                         : false;
 
-
+        /*
         // Title for the new page
         $title = 'Liste de produits';
         if ($subcat !== 0)
@@ -57,8 +78,7 @@ class product extends Controller {
 
         else if ($recommended == true)
             $title = 'Produits recommandés';
-
-
+        
         // Get products from DB
         $products = array();
         for ($i = 1; $i <= 10; $i++) {
@@ -72,6 +92,67 @@ class product extends Controller {
                 'isFavorite' => ($i % 2 == 0 ? true : false),
                 'image' => 'holder.js/200x200?text=IMG'
             );
+        }
+        */
+        
+        $productsInDB = productTable::getProducts();
+        
+        $title = 'Liste de produits';
+        $products = array();
+        
+        if ($subcat !== 0)
+        {
+            
+            $title = $subcat;
+            
+            foreach ($productsInDB as $productInDB)
+            {
+                
+                if ($productInDB->type == $subcat)
+                {
+                    
+                    $products[] = array(
+                        'id' => $productInDB->id,
+                        'name' => $productInDB->name,
+                        'price' => $productInDB->price,
+                        'discount' => $productInDB->promotion,
+                        'category' => $productInDB->type,
+                        'sizes' => $productInDB->size,
+                        'isFavorite' => ($productInDB->id % 2 == 0 ? true : false),
+                        'image' => 'holder.js/200x200?text=IMG'
+                    );
+                    
+                }
+                
+            }
+            
+        }
+        else if ($recommended == true)
+        {
+            
+            $title = 'Produits recommandés';
+            
+            foreach ($productsInDB as $productInDB)
+            {
+                
+                if ($productInDB->type == $subcat)
+                {
+                    
+                    $products[] = array(
+                        'id' => $productInDB->id,
+                        'name' => $productInDB->name,
+                        'price' => $productInDB->price,
+                        'discount' => $productInDB->promotion,
+                        'category' => $productInDB->type,
+                        'sizes' => $productInDB->size,
+                        'isFavorite' => ($productInDB->id % 2 == 0 ? true : false),
+                        'image' => 'holder.js/200x200?text=IMG'
+                    );
+                    
+                }
+                
+            }
+            
         }
 
         echo $this->plates->render('product_list', ['title' => $title, 'products' => $products]);
