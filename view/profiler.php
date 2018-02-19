@@ -12,7 +12,7 @@
             type: "POST",
             data: {},
             success: function() {
-                sigma.parsers.json("<?= $productsFilename ?>", s);
+                sigma.parsers.json("<?= $filename ?>", s);
                 s.refresh();
 
                 setTimeout(reload, 1000);
@@ -26,7 +26,7 @@
             defaultNodeColor: "#ec5148"
         });
 
-        sigma.parsers.json("<?= $productsFilename ?>", s);
+        sigma.parsers.json("<?= $filename ?>", s);
 
         setTimeout(reload, 1000);
     });

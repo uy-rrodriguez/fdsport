@@ -686,8 +686,27 @@ a.fdsport-btn-show:visited {
 }
 
 #profiler-graph {
+    position: relative;
     height: 600px;
     background: #F6F6F6;
+}
+
+#profiler-graph:before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0px;
+    right: 0px;
+    border-bottom: 1px solid #CCC;
+}
+
+#profiler-graph:after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 0px;
+    bottom: 0px;
+    border-left: 1px solid #CCC;
 }
 
 

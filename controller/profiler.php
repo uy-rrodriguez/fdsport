@@ -4,53 +4,129 @@ require_once 'pca.php';
 
 class profiler extends Controller {
     function __construct($plates) {
+        //session_destroy();
         parent::__construct($plates);
     }
     
     public function index() {
-        $productsFilename = $this->processProfilingProducts();
+        $filename = $this->processProfiling();
 
         // Render a template
         echo $this->plates->render('profiler', [
             'title' => 'Graphe de profiling',
-            'productsFilename' => BASE_URL . '/' . $productsFilename
+            'filename' => BASE_URL . '/' . $filename
         ]);
     }
 
     public function data() {
-        $this->processProfilingProducts();
+        $this->processProfiling();
     }
 
     /**
-     * Process the profiling data for products and returns the name of the file where
+     * Loads the profiling data from the database and stores it in the session.
+     */
+    public function loadProfilingData() {
+        if (! isset($_SESSION['profiling_products'])) {
+            $products = $this->getTestProducts();
+            $_SESSION['profiling_products'] = $products;
+        }
+
+        if (! isset($_SESSION['profiling_user'])) {
+            $user = $this->getUserProfile();
+            $_SESSION['profiling_user'] = $user;
+        }
+    }
+
+    /**
+     * Update the profiling data for the connected user using the product information.
+     *
+     * @param $productID
+     */
+    public function updateUser($productID) {
+        $this->loadProfilingData();
+
+        // Search product data
+        $products = $_SESSION['profiling_products'];
+        $productData = false;
+        foreach ($products as $p) {
+            if ($p->getId() == $productID) {
+                $productData = $p;
+                break;
+            }
+        }
+
+        if ($productData === false) {
+            $productData = new profilingItemProduct($productID, 'Produit ' . $productID);
+            $_SESSION['profiling_products'][] = $productData;
+        }
+
+        // Search user data
+        $userData = $_SESSION['profiling_user'];
+
+        // Move user profile
+        $userData->moveToMiddle($productData);
+        $_SESSION['profiling_user'] = $userData;
+    }
+
+    /**
+     * Update the profiling data for the previously visited product using the new product information.
+     *
+     * @param $previousProductID
+     * @param $newProductID
+     */
+    public function updateProduct($previousProductID, $newProductID) {
+        $this->loadProfilingData();
+
+        // Search product data
+        $products = $_SESSION['profiling_products'];
+        $previousProductData = false;
+        $newProductData = false;
+        foreach ($products as $p) {
+            if ($p->getId() == $previousProductID) {
+                $previousProductData = $p;
+            }
+            else if ($p->getId() == $newProductID) {
+                $newProductData = $p;
+            }
+
+            if ($previousProductData !== false && $newProductData !== false)
+                break;
+        }
+
+        if ($previousProductData === false) {
+            $previousProductData = new profilingItemProduct($previousProductID, 'Produit ' . $previousProductID);
+            $_SESSION['profiling_products'][] = $previousProductData;
+        }
+
+        if ($newProductData === false) {
+            $newProductData = new profilingItemProduct($newProductID, 'Produit ' . $newProductID);
+            $_SESSION['profiling_products'][] = $newProductData;
+        }
+
+        // Move old product profile
+        $previousProductData->moveToMiddle($newProductData);
+    }
+
+    /**
+     * Process the profiling data and returns the name of the file where
      * the resulting JSON will be stored.
      *
      * @return string Produced JSON data
      */
-    public function processProfilingProducts() {
-        $products = $this->getTestProducts();
-        $products2D = $this->getProducts2D($products);
-        $productsJSON = $this->getNodesJSON($products2D);
+    public function processProfiling() {
+        $this->loadProfilingData();
 
-        $filename = 'profiling_products.json';
-        file_put_contents($filename, $productsJSON);
+        $user = $_SESSION['profiling_user'];
+        $products = $_SESSION['profiling_products'];
 
-        return $filename;
-    }
+        $allItems = array($user);
+        $allItems = array_merge($allItems, $products);
 
-    /**
-     * Process the profiling data for users and returns the name of the file where
-     * the resulting JSON will be stored.
-     *
-     * @return string Produced JSON data
-     */
-    public function processProfilingUsers() {
-        $products = $this->getTestProducts();
-        $products2D = $this->getProducts2D($products);
-        $productsJSON = $this->getNodesJSON($products2D);
+        //$allItems = $this->getItems2D($allItems);
+        $itemsJSON = $this->getNodesJSON($allItems);
 
-        $filename = 'profiling_users.json';
-        file_put_contents($filename, $productsJSON);
+        $filename = 'profiling.json';
+        file_put_contents($filename, $itemsJSON);
 
         return $filename;
     }
@@ -58,11 +134,7 @@ class profiler extends Controller {
     public function getTestProducts() {
         $products = array();
         for ($i = 1; $i <= 20; $i++) {
-            $products[] = array(
-                'id' => $i,
-                'title' => 'Produit ' . $i,
-                'profilingData' => new ProfilingItem()
-            );
+            $products[] = new profilingItemProduct($i, 'Produit ' . $i);
         }
 
         // Define variables
@@ -78,14 +150,14 @@ class profiler extends Controller {
 
         // Man - Adult - CSP++ - Nice - Rugby
         $values = array(
-            0, 0, 1, 0, 0,
+            0, 0, 0, 1, 0,
             0, 1, 0,
             1, 0,
             0, 0, 0, 1,
             0, 0, 0, 0, 0, 0, 0, 0, 1
         );
-        $products[0]['name'] = 'Man - Young adult - CSP++ - Nice - Rugby';
-        $products[0]['profilingData']->setStaticVars(array_combine($variables, $values));
+        $products[0]->setName('Man - Adult - CSP++ - Nice - Rugby');
+        $products[0]->setStaticVars(array_combine($variables, $values));
 
         // Woman - Young - CSP- - Marseille - Football
         $values = array(
@@ -95,19 +167,19 @@ class profiler extends Controller {
             1, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 1, 0
         );
-        $products[1]['name'] = 'Woman - Young - CSP- - Marseille - Football';
-        $products[1]['profilingData']->setStaticVars(array_combine($variables, $values));
+        $products[1]->setName('Woman - Young - CSP- - Marseille - Football');
+        $products[1]->setStaticVars(array_combine($variables, $values));
 
-        // Man - Adult - CSP+ - Clermont - Rugby
+        // Man - Young adult - CSP~ - Clermont - Rugby
         $values = array(
-            0, 0, 0, 1, 0,
+            0, 0, 1, 0, 0,
             0, 1, 0,
             1, 0,
-            0, 0, 1, 0,
+            0, 1, 0, 0,
             0, 0, 0, 1, 0, 0, 0, 0, 0
         );
-        $products[2]['name'] = 'Man - Adult - CSP+ - Clermont - Rugby';
-        $products[2]['profilingData']->setStaticVars(array_combine($variables, $values));
+        $products[2]->setName('Man - Young adult - CSP~ - Clermont - Rugby');
+        $products[2]->setStaticVars(array_combine($variables, $values));
 
         // Woman - Old adult - CSP+ - Montpellier - Handball
         $values = array(
@@ -117,8 +189,8 @@ class profiler extends Controller {
             0, 0, 1, 0,
             0, 0, 0, 0, 0, 0, 1, 0, 0
         );
-        $products[3]['name'] = 'Woman - Old adult - CSP+ - Montpellier - Handball';
-        $products[3]['profilingData']->setStaticVars(array_combine($variables, $values));
+        $products[3]->setName('Woman - Old adult - CSP+ - Montpellier - Handball');
+        $products[3]->setStaticVars(array_combine($variables, $values));
 
         // Man - Young adult - CSP~ - Lyon - Football
         $values = array(
@@ -128,78 +200,65 @@ class profiler extends Controller {
             0, 1, 0, 0,
             0, 0, 0, 0, 1, 0, 0, 0, 0
         );
-        $products[4]['name'] = 'Man - Young adult - CSP~ - Lyon - Football';
-        $products[4]['profilingData']->setStaticVars(array_combine($variables, $values));
+        $products[4]->setName('Man - Young adult - CSP~ - Lyon - Football');
+        $products[4]->setStaticVars(array_combine($variables, $values));
+
+        // Calculate once the 2D coordinates for static items
+        $static = array_slice($products, 0, 5);
+        $this->getItems2D($static);
 
         return $products;
     }
 
-    public function getProducts2D($products) {
-        // Principal Component Analysis to get the items represented in two dimensions
-        $points = array();
-        foreach ($products as $product) {
-            if (! $product['profilingData']->isUnset()) {
-                $coords = array_values($product['profilingData']->getVars());
-                $points[] = $coords;
+    public function getUserProfile() {
+        $user = new profilingItemUser(0, 'User');
+        return $user;
+    }
+
+    public function getItems2D($items) {
+        $items2D = array();
+        $pcaPoints = array();
+        foreach ($items as $item) {
+            if (! $item->isUnset()) {
+                $items2D[] = $item;
+                $pcaPoints[] = array_values($item->getVars());
             }
         }
 
-        $pca = new PCA\PCA($points);
+        // Principal Component Analysis to get the coordinates in two dimensions
+        $pca = new PCA\PCA($pcaPoints);
         $pca->changeDimension(2);
         $pca->applayingPca();
         $pcaResult = $pca->getNewData();
 
-        $products2D = array();
-        foreach ($products as $i => $product) {
-            if (! $product['profilingData']->isUnset()) {
-                $products2D[] = array(
-                    'id' => $product['id'],
-                    'name' => $product['name'],
-                    'profilingData' => $product['profilingData'],
-                    'x' => $pcaResult[$i][0],
-                    'y' => $pcaResult[$i][1]
-                );
-            }
+        foreach ($items2D as $i => $item) {
+            $item->setCoordX($pcaResult[$i][0]);
+            $item->setCoordY($pcaResult[$i][1]);
         }
 
-        return $products2D;
+        return $items2D;
     }
 
-    public function getNodesJSON($products2D) {
-        // Max and min values helps us center the origin of coordinates
-        $minX = false; $maxX = false; $minY = false; $maxY = false;
-
+    public function getNodesJSON($items2D) {
         $nodes = array();
-        foreach ($products2D as $i => $product) {
-            $n = array (
-                'id' => $product['id'],
-                'label' => $product['name'],
-                'x' => 8 * $product['x'],
-                'y' => $product['y'],
-                'size' => 3
-            );
+        foreach ($items2D as $i => $item) {
+            if (! $item->isUnset()) {
+                $n = array(
+                    'id' => $item->getId(),
+                    'label' => $item->getName(),
+                    'x' => 7 * $item->getCoordX(),
+                    'y' => $item->getCoordY(),
+                    'size' => 3
+                );
 
-            if ($product['profilingData']->isStatic()) {
-                $n['size'] = 2;
-                $n['color'] = '#666';
+                if ($item->isStatic()) {
+                    $n['size'] = 2;
+                    $n['color'] = '#666';
+                }
+
+                $nodes[] = $n;
             }
-
-            $nodes[] = $n;
-
-            if ($minX === false || $n['x'] < $minX) $minX = $n['x'];
-            if ($maxX === false || $n['x'] > $maxX) $maxX = $n['x'];
-            if ($minY === false || $n['y'] < $minY) $minY = $n['y'];
-            if ($maxY === false || $n['y'] > $maxY) $maxY = $n['y'];
         }
-
-        $nodes[] = array (
-            'id' => '0',
-            'label' => '',
-            'x' => ($maxX + $minX) / 2,
-            'y' => ($maxY + $minY) / 2,
-            'size' => 1,
-            'color' => '#AAA'
-        );
 
         $data = array(
             'edges' => array(),
@@ -207,72 +266,5 @@ class profiler extends Controller {
         );
 
         return json_encode($data);
-    }
-}
-
-class ProfilingItem {
-    private $vars = array();
-    public $static = false;
-    public $unset = true;
-
-    function __construct() {}
-
-    function __set($name, $value) {
-        $this->vars[$name] = floatval($value);
-    }
-
-    public function __get($name) {
-        if (key_exists($name, $this->vars)) {
-            return $this->vars[$name];
-        }
-        else {
-            return 0;
-        }
-    }
-
-    public function getVars() {
-        return $this->vars;
-    }
-
-    public function isUnset() {
-        return $this->unset;
-    }
-
-    public function isStatic() {
-        return $this->static;
-    }
-
-    public function setStaticVars($vars) {
-        $this->vars = array();
-        $this->vars = array_merge($this->vars, $vars);
-        $this->unset = false;
-        $this->static = true;
-    }
-
-    public function copyVars(ProfilingItem $origin) {
-        if ($this->static) return;
-
-        $this->unset = false;
-        $this->vars = array();
-        foreach ($origin->vars as $name => $value) {
-            $this->$name = $value;
-        }
-    }
-
-    public function moveToMiddle(ProfilingItem $previous) {
-        if ($this->static) {
-            if (! $previous->static)
-                $previous->moveToMiddle($this);
-        }
-        else if ($this->unset) {
-            $this->unset = false;
-            $this->copyVars($previous);
-        }
-        else {
-            $mixVarsKeys = array_merge(array_keys($this->vars), array_keys($previous->vars));
-            foreach ($mixVarsKeys as $name) {
-                $this->$name = ($this->$name + $previous->$name) / 2;
-            }
-        }
     }
 }
