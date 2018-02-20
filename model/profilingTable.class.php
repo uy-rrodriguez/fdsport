@@ -12,13 +12,13 @@ class profilingTable
         
         $profilings = $profilingRepository->findAll();
         
-        if ($profilings == false)
+        if ($profilings === false)
         {
         
             return null;
         
         }
-        
+
         return $profilings;
     
     }
@@ -40,9 +40,31 @@ class profilingTable
             return null;
             
         }
-        
+
         return $profiling;
         
+    }
+
+    public static function save(profiling $profiling)
+    {
+        $em = dbconnection::getInstance()->getEntityManager();
+
+        if (! $profiling->id) {
+            $profiling->id = null;
+            $em->persist($profiling);
+        }
+        else {
+            $em->merge($profiling);
+        }
+
+        $em->flush();
+    }
+
+    public static function deleteAll()
+    {
+        $em = dbconnection::getInstance()->getEntityManager();
+        $q = $em->createQuery('DELETE FROM profiling');
+        return $q->execute();
     }
 
 }

@@ -5,9 +5,7 @@ ini_set("display_errors", true);
 require_once 'lib/core.php';
 require_once 'configuration/constants.php';
 
-if (!isset($_SESSION)) {
-	session_start();
-}
+session_start();
 
 // Context initialisation
 $nameApp = 'fdsport';

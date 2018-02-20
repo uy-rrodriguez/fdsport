@@ -312,6 +312,7 @@ a.fdsport-btn-show:visited {
 }
 
 .fdsport-products-h-list .fdsport-item-title {
+    white-space: normal;
     font-size: 1.05em;
 }
 

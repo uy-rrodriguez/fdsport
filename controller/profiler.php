@@ -2,13 +2,19 @@
 require_once 'controller.php';
 require_once 'pca.php';
 
-class profiler extends Controller {
+class profilerCtrl extends Controller {
+    private $productProfiles = array();
+    private $userProfile = null;
+    private $lastProductProfile = null;
+    private $forceProcessing = false;
+
     function __construct($plates) {
-        //session_destroy();
         parent::__construct($plates);
     }
     
     public function index() {
+        // Force processing
+        $this->forceProcessing = true;
         $filename = $this->processProfiling();
 
         // Render a template
@@ -18,27 +24,108 @@ class profiler extends Controller {
         ]);
     }
 
+    public function test() {
+        echo $this->plates->render('profiler_test', [
+            'title' => 'Test de profiling'
+        ]);
+    }
+
     public function data() {
         $this->processProfiling();
     }
 
+    public function reset() {
+        session_destroy();
+        profilingTable::deleteAll();
+
+        // Force processing
+        $this->forceProcessing = true;
+        $this->processProfiling();
+    }
+
     /**
-     * Loads the profiling data from the database and stores it in the session.
+     * Loads the profiling for products from the database and stores it as attribute.
+     * Creates a new user profile in session if it doesn't exists.
      */
     public function loadProfilingData() {
-        if (! isset($_SESSION['profiling_products'])) {
-            $products = $this->getTestProducts();
-            $_SESSION['profiling_products'] = $products;
+        // Load product profiles from DB
+        $profilesDB = profilingTable::getProfilings();
+
+        if (count($profilesDB) <= 0) {
+            $staticProducts = $this->initStaticProducts();
+            foreach ($staticProducts as $p) {
+                profilingTable::save($this->exportItemProductToDB($p));
+            }
+            $profilesDB = profilingTable::getProfilings();
         }
 
+        $this->productProfiles = array();
+        foreach ($profilesDB as $p) {
+            $this->productProfiles[] = $this->importItemProductFromDB($p);
+        }
+
+        // Load user profile from SESSION
         if (! isset($_SESSION['profiling_user'])) {
-            $user = $this->getUserProfile();
+            $user = new profilingItemUser(0, 'User');
             $_SESSION['profiling_user'] = $user;
+        }
+        $this->userProfile = $_SESSION['profiling_user'];
+
+        // Load last product profile from SESSION
+        if (isset($_SESSION['profiling_last_product_id'])) {
+            $productDB = profilingTable::getProfilingById($_SESSION['profiling_last_product_id']);
+            if ($productDB)
+                $this->lastProductProfile = $this->importItemProductFromDB($productDB);
         }
     }
 
     /**
-     * Update the profiling data for the connected user using the product information.
+     * Gets a profiling item as stored in DB and returns a profilingItemProduct.
+     *
+     * @param profiling $profiling
+     * @return profilingItemProduct
+     */
+    public function importItemProductFromDB(profiling $profiling) {
+        $profilingProduct = new profilingItemProduct(
+            $profiling->id,
+            $profiling->product
+        );
+
+        $profilingData = json_decode($profiling->profil);
+        $profilingProduct->setVars((array) $profilingData->vars);
+        $profilingProduct->setCoordX($profilingData->coordX);
+        $profilingProduct->setCoordY($profilingData->coordY);
+        $profilingProduct->setStatic($profilingData->static);
+        $profilingProduct->setUnset($profilingData->unset);
+
+        return $profilingProduct;
+    }
+
+    /**
+     * Gets a profilingItemProduct and returns a profiling item to store in DB.
+     *
+     * @param profilingItemProduct $profilingProduct
+     * @return profiling
+     */
+    public function exportItemProductToDB(profilingItemProduct $profilingProduct) {
+        $profiling = new profiling();
+        $profiling->id = $profilingProduct->getId();
+        $profiling->product = $profilingProduct->getProduct();
+
+        $profilingData = array(
+            'static' => $profilingProduct->isStatic(),
+            'unset' => $profilingProduct->isUnset(),
+            'coordX' => $profilingProduct->getCoordX(),
+            'coordY' => $profilingProduct->getCoordY(),
+            'vars' => $profilingProduct->getVars()
+        );
+        $profiling->profil = json_encode($profilingData);
+
+        return $profiling;
+    }
+
+    /**
+     * Update the profiling data for the current user using the product information.
      *
      * @param $productID
      */
@@ -46,46 +133,64 @@ class profiler extends Controller {
         $this->loadProfilingData();
 
         // Search product data
-        $products = $_SESSION['profiling_products'];
         $productData = false;
-        foreach ($products as $p) {
-            if ($p->getId() == $productID) {
+        foreach ($this->productProfiles as $p) {
+            if ($p->getProduct()->id == $productID) {
                 $productData = $p;
                 break;
             }
         }
 
-        if ($productData === false) {
-            $productData = new profilingItemProduct($productID, 'Produit ' . $productID);
-            $_SESSION['profiling_products'][] = $productData;
+        $productUnset = ($productData === false);
+        if ($productUnset) {
+            $product = productTable::getProductById($productID);
+            $productData = new profilingItemProduct(0, $product);
         }
 
-        // Search user data
-        $userData = $_SESSION['profiling_user'];
+
+        // If the product already had a profiling data, we will move it accordingly to the last visited item
+        if ($productUnset === false && $this->lastProductProfile !== null) {
+            $this->updateProduct($this->lastProductProfile, $productData);
+        }
+        else {
+            // Do nothing
+        }
 
         // Move user profile
-        $userData->moveToMiddle($productData);
-        $_SESSION['profiling_user'] = $userData;
+        $this->userProfile->moveToMiddle($productData);
+        $_SESSION['profiling_user'] = $this->userProfile;
+
+        // If it is a new product, we store it in the DB
+        if ($productUnset) {
+            profilingTable::save($this->exportItemProductToDB($productData));
+        }
+
+
+        // Change last product in session
+        $_SESSION['profiling_last_product_id'] = $productData->getId();
+
+        // Tell the system that new data exists => NOTICE: this method is not thread-safe
+        $_SESSION['profiling_new_data'] = true;
     }
 
     /**
      * Update the profiling data for the previously visited product using the new product information.
      *
-     * @param $previousProductID
-     * @param $newProductID
+     * @param $previousProductData
+     * @param $newProductData
      */
-    public function updateProduct($previousProductID, $newProductID) {
+    public function updateProduct($previousProductData, $newProductData) {
+        /*
         $this->loadProfilingData();
 
         // Search product data
-        $products = $_SESSION['profiling_products'];
         $previousProductData = false;
         $newProductData = false;
-        foreach ($products as $p) {
-            if ($p->getId() == $previousProductID) {
+        foreach ($this->productProfiles as $p) {
+            if ($p->getProduct()->id == $previousProductID) {
                 $previousProductData = $p;
             }
-            else if ($p->getId() == $newProductID) {
+            else if ($p->getProduct()->id == $newProductID) {
                 $newProductData = $p;
             }
 
@@ -94,17 +199,22 @@ class profiler extends Controller {
         }
 
         if ($previousProductData === false) {
-            $previousProductData = new profilingItemProduct($previousProductID, 'Produit ' . $previousProductID);
-            $_SESSION['profiling_products'][] = $previousProductData;
+            $product = productTable::getProductById($previousProductID);
+            $previousProductData = new profilingItemProduct(0, $product);
         }
 
         if ($newProductData === false) {
-            $newProductData = new profilingItemProduct($newProductID, 'Produit ' . $newProductID);
-            $_SESSION['profiling_products'][] = $newProductData;
+            $product = productTable::getProductById($previousProductID);
+            $newProductData = new profilingItemProduct(0, $product);
         }
+        */
 
         // Move old product profile
-        $previousProductData->moveToMiddle($newProductData);
+        $newProductData->moveToMiddle($previousProductData);
+
+        // Store product data
+        profilingTable::save($this->exportItemProductToDB($previousProductData));
+        profilingTable::save($this->exportItemProductToDB($newProductData));
     }
 
     /**
@@ -114,28 +224,51 @@ class profiler extends Controller {
      * @return string Produced JSON data
      */
     public function processProfiling() {
-        $this->loadProfilingData();
-
-        $user = $_SESSION['profiling_user'];
-        $products = $_SESSION['profiling_products'];
-
-        $allItems = array($user);
-        $allItems = array_merge($allItems, $products);
-
-        //$allItems = $this->getItems2D($allItems);
-        $itemsJSON = $this->getNodesJSON($allItems);
-
         $filename = 'profiling.json';
-        file_put_contents($filename, $itemsJSON);
+
+        // Do not process data if no changes have been made
+        if ($this->forceProcessing || isset($_SESSION['profiling_new_data'])) {
+            $this->forceProcessing = false;
+            unset($_SESSION['profiling_new_data']);
+
+            $this->loadProfilingData();
+
+            $allItems = array($this->userProfile);
+            $allItems = array_merge($allItems, $this->productProfiles);
+
+            //$allItems = $this->getItems2D($allItems);
+            $itemsJSON = $this->getNodesJSON($allItems);
+
+
+            file_put_contents($filename, $itemsJSON);
+        }
 
         return $filename;
     }
 
-    public function getTestProducts() {
+    public function initStaticProducts() {
         $products = array();
+
+        $p = productTable::getProductById(43);
+        $products[] = new profilingItemProduct(0, $p); // Maillot Racing 92 domicile 2017-18 Coq Sportif ciel blanc
+
+        $p = productTable::getProductById(3);
+        $products[] = new profilingItemProduct(0, $p); // Maillot OM (Femme)
+
+        $p = productTable::getProductById(49);
+        $products[] = new profilingItemProduct(0, $p); // Ballon Racing 92 Gilbert
+
+        $p = productTable::getProductById(32);
+        $products[] = new profilingItemProduct(0, $p); // Tee-shirt femme US Dunkerque Handball 2016/2017
+
+        $p = productTable::getProductById(29);
+        $products[] = new profilingItemProduct(0, $p); // Sweat à capuche OL Bleu
+
+        /*
         for ($i = 1; $i <= 20; $i++) {
-            $products[] = new profilingItemProduct($i, 'Produit ' . $i);
+            $products[] = new profilingItemProduct(0, $i, 'Produit ' . $i);
         }
+        */
 
         // Define variables
         $variables = array(
@@ -156,7 +289,7 @@ class profiler extends Controller {
             0, 0, 0, 1,
             0, 0, 0, 0, 0, 0, 0, 0, 1
         );
-        $products[0]->setName('Man - Adult - CSP++ - Nice - Rugby');
+        //$products[0]->setName('Man - Adult - CSP++ - Nice - Rugby');
         $products[0]->setStaticVars(array_combine($variables, $values));
 
         // Woman - Young - CSP- - Marseille - Football
@@ -167,7 +300,7 @@ class profiler extends Controller {
             1, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 1, 0
         );
-        $products[1]->setName('Woman - Young - CSP- - Marseille - Football');
+        //$products[1]->setName('Woman - Young - CSP- - Marseille - Football');
         $products[1]->setStaticVars(array_combine($variables, $values));
 
         // Man - Young adult - CSP~ - Clermont - Rugby
@@ -178,7 +311,7 @@ class profiler extends Controller {
             0, 1, 0, 0,
             0, 0, 0, 1, 0, 0, 0, 0, 0
         );
-        $products[2]->setName('Man - Young adult - CSP~ - Clermont - Rugby');
+        //$products[2]->setName('Man - Young adult - CSP~ - Clermont - Rugby');
         $products[2]->setStaticVars(array_combine($variables, $values));
 
         // Woman - Old adult - CSP+ - Montpellier - Handball
@@ -189,7 +322,7 @@ class profiler extends Controller {
             0, 0, 1, 0,
             0, 0, 0, 0, 0, 0, 1, 0, 0
         );
-        $products[3]->setName('Woman - Old adult - CSP+ - Montpellier - Handball');
+        //$products[3]->setName('Woman - Old adult - CSP+ - Montpellier - Handball');
         $products[3]->setStaticVars(array_combine($variables, $values));
 
         // Man - Young adult - CSP~ - Lyon - Football
@@ -200,7 +333,7 @@ class profiler extends Controller {
             0, 1, 0, 0,
             0, 0, 0, 0, 1, 0, 0, 0, 0
         );
-        $products[4]->setName('Man - Young adult - CSP~ - Lyon - Football');
+        //$products[4]->setName('Man - Young adult - CSP~ - Lyon - Football');
         $products[4]->setStaticVars(array_combine($variables, $values));
 
         // Calculate once the 2D coordinates for static items
@@ -208,11 +341,6 @@ class profiler extends Controller {
         $this->getItems2D($static);
 
         return $products;
-    }
-
-    public function getUserProfile() {
-        $user = new profilingItemUser(0, 'User');
-        return $user;
     }
 
     public function getItems2D($items) {
@@ -243,17 +371,26 @@ class profiler extends Controller {
         $nodes = array();
         foreach ($items2D as $i => $item) {
             if (! $item->isUnset()) {
+
+                $label = $item->getName();
+                if ($item->getType() == 'product')
+                    $label = '(' . $item->getProduct()->id . ') ' . $label;
+
                 $n = array(
                     'id' => $item->getId(),
-                    'label' => $item->getName(),
-                    'x' => 7 * $item->getCoordX(),
+                    'label' => $label,
+                    'x' => 6 * $item->getCoordX(),
                     'y' => $item->getCoordY(),
-                    'size' => 3
+                    'size' => 1
                 );
 
                 if ($item->isStatic()) {
-                    $n['size'] = 2;
-                    $n['color'] = '#666';
+                    $n['size'] = 1;
+                    $n['color'] = '#666666';
+                }
+
+                if ($item->getType() == 'user') {
+                    $n['color'] = '#2222DD';
                 }
 
                 $nodes[] = $n;

@@ -1,5 +1,6 @@
 <?php
 require_once 'controller.php';
+require_once 'profiler.php';
 
 class productCtrl extends Controller {
     function __construct($plates) {
@@ -7,6 +8,10 @@ class productCtrl extends Controller {
     }
 
     public function show($id) {
+
+        // Update profiling
+        $profiler = new profilerCtrl($this->plates);
+        $profiler->updateUser($id);
         
         /*
         // Product data

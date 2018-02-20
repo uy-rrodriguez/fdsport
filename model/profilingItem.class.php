@@ -36,12 +36,30 @@ class profilingItem {
         return $this->vars;
     }
 
+    public function setVars($vars) {
+        $this->unset = false;
+        $this->vars = $vars;
+    }
+
+    public function setStaticVars($vars) {
+        $this->static = true;
+        $this->setVars($vars);
+    }
+
     public function isUnset() {
         return $this->unset;
     }
 
+    public function setUnset($unset) {
+        $this->unset = $unset;
+    }
+
     public function isStatic() {
         return $this->static;
+    }
+
+    public function setStatic($static) {
+        $this->static = $static;
     }
 
     public function getType() {
@@ -74,13 +92,6 @@ class profilingItem {
 
     public function setCoordY($coordY) {
         $this->coordY = $coordY;
-    }
-
-    public function setStaticVars($vars) {
-        $this->unset = false;
-        $this->static = true;
-        $this->vars = array();
-        $this->vars = array_merge($this->vars, $vars);
     }
 
     public function copyVars(ProfilingItem $origin) {

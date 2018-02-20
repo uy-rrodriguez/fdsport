@@ -16,7 +16,7 @@ class profiling
 	* @OneToOne(targetEntity="product")
 	* @JoinColumn(name="id_product", referencedColumnName ="id")
 	*/
-    public $id_product;
+    public $product;
     
     /** @Column(type="string", length=2000) */
     public $profil;

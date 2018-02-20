@@ -1,7 +1,15 @@
 <?php
 
 class profilingItemProduct extends profilingItem {
-    function __construct($id, $name) {
-        parent::__construct('product', $id, $name);
+    private $product = null;
+
+    function __construct($id, $product) {
+        parent::__construct('product', $id, $product->name);
+
+        $this->product = $product;
+    }
+
+    public function getProduct() {
+        return $this->product;
     }
 }

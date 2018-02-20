@@ -15,7 +15,7 @@
                 sigma.parsers.json("<?= $filename ?>", s);
                 s.refresh();
 
-                setTimeout(reload, 1000);
+                setTimeout(reload, 500);
             }
         });
     }
@@ -28,6 +28,6 @@
 
         sigma.parsers.json("<?= $filename ?>", s);
 
-        setTimeout(reload, 1000);
+        setTimeout(reload, 500);
     });
 </script>
