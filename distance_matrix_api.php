@@ -1,27 +1,28 @@
 <?php
 
-error_reporting(E_ALL);
-ini_set("display_errors", true);
-
-require_once 'lib/core.php';
-require_once 'configuration/constants.php';
-
-if (!isset($_SESSION)) {
-	session_start();
+function getGeolocalizedCity()
+{
+    
+    $user_ip = getenv('REMOTE_ADDR');
+    
+    $geo = unserialize(file_get_contents("http://www.geoplugin.net/php.gp?ip=$user_ip"));
+    
+    if ($geo['geoplugin_city'])
+    {
+        
+        return $geo['geoplugin_city'];
+        
+    }
+    
+    return null;
+    
 }
-
-// Context initialisation
-$nameApp = 'fdsport';
-$context = context::getInstance();
-$context->init($nameApp);
 
 class DistanceMatrixApi
 {
 
-	function __construct($distance)
+	function __construct()
 	{
-
-		$this->distance	=	$distance;
 
 		$this->baseUrl	=	'https://maps.googleapis.com/maps/api/distancematrix/';
 		$this->format	=	'json';
@@ -29,10 +30,25 @@ class DistanceMatrixApi
 
 	}
 
-	function checkCity($city, $latitude = null, $longitude = null)
+	function findNearestTeam($city, $latitude = null, $longitude = null)
 	{
         
-        $nearestTeams = array();
+        if ($city == null)
+        {
+            
+            if ($latitude == null || $longitude == null)
+            {
+                
+                return null;
+                
+            }
+            
+        }
+        
+        $nearestTeam = array(
+            'team'      ->  null,
+            'distance'  ->  null
+        );
 
         $teams = teamTable::getTeams();
         
@@ -44,13 +60,21 @@ class DistanceMatrixApi
             if ($result)
             {
                 
-                array_push($nearestTeams, $team);
+                if ($result < $nearestTeam['distance'] || $nearestTeam['distance'] == null)
+                {
+                    
+                    $nearestTeam = array(
+                        'team'      =>  $team,
+                        'distance'  =>  $result
+                    );
+                    
+                }
                 
             }
             
         }
         
-        return $nearestTeams;
+        return $nearestTeams['team'];
 
 	}
 
@@ -67,9 +91,9 @@ class DistanceMatrixApi
 		$origins = strtolower($city);
 
 		$data = [
-			"origins"		=>	$origins,
-			"destinations"	=>	$destinations,
-			"key"			=>	$this->apiKey
+			'origins'		=>	$origins,
+			'destinations'	=>	$destinations,
+			'key'			=>	$this->apiKey
 		];
 
 		return $this->sendApiRequest($data);
@@ -88,29 +112,19 @@ class DistanceMatrixApi
 	    if ($info)
 	    {
 
-			if ($info["rows"][0]["elements"][0]["distance"]["value"] <= $this->distance)
+			if ($info['rows'][0]['elements'][0]['distance']['value'])
 			{
 
-				return true;
-
-			}
-			else
-			{
-
-				return false;
+				return floatval($info['rows'][0]['elements'][0]['distance']['value']);
 
 			}
 
 	    }
+        
+        return null;
 
 	}
 
 }
-
-$api = new DistanceMatrixApi(50000);
-
-$teams = $api->checkCity('lunel');
-
-var_dump($teams);
 
 ?>
