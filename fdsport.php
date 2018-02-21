@@ -34,7 +34,7 @@ $controllerClass = $controller . 'Ctrl';
 $controllerInst = new $controllerClass($plates);
 
 // Call corresponding controller method
-if ($id) {
+if ($id !== false) {
     $controllerInst->$method($id);
 }
 else {

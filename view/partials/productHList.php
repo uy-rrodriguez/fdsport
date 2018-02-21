@@ -17,11 +17,12 @@
     <ul class="fdsport-list">
         
         <?php foreach ($products as $product): ?>
-        
+
         <li class="d-inline-flex flex-column justify-content-between fdsport-item">
             <span class="fdsport-item-title"><?= $this->e($product['name']) ?></span>
             <span class="fdsport-item-price"><?= $this->e($product['price']) ?> €</span>
             <span class="fdsport-item-promo"><?= $this->e($product['discount']) ?>%</span>
+            <a href="<?= BASE_URL . '/product/show/' . $this->e($product['id']) ?>" class="fdsport-item-link"></a>
         </li>
         
         <?php endforeach; ?>

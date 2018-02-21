@@ -12,4 +12,8 @@ class profilingItemProduct extends profilingItem {
     public function getProduct() {
         return $this->product;
     }
+
+    public function setName($name) {
+        $this->name = $name;
+    }
 }

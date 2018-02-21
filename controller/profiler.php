@@ -64,6 +64,14 @@ class profilerCtrl extends Controller {
             $this->productProfiles[] = $this->importItemProductFromDB($p);
         }
 
+        /*
+        $this->productProfiles[0]->setName('Man - Adult - CSP++ - Nice - Rugby');
+        $this->productProfiles[1]->setName('Woman - Young - CSP- - Marseille - Football');
+        $this->productProfiles[2]->setName('Man - Young adult - CSP~ - Clermont - Rugby');
+        $this->productProfiles[3]->setName('Woman - Old adult - CSP+ - Montpellier - Handball');
+        $this->productProfiles[4]->setName('Man - Young adult - CSP~ - Lyon - Football');
+        */
+
         // Load user profile from SESSION
         if (! isset($_SESSION['profiling_user'])) {
             $user = new profilingItemUser(0, 'User');
@@ -180,35 +188,6 @@ class profilerCtrl extends Controller {
      * @param $newProductData
      */
     public function updateProduct($previousProductData, $newProductData) {
-        /*
-        $this->loadProfilingData();
-
-        // Search product data
-        $previousProductData = false;
-        $newProductData = false;
-        foreach ($this->productProfiles as $p) {
-            if ($p->getProduct()->id == $previousProductID) {
-                $previousProductData = $p;
-            }
-            else if ($p->getProduct()->id == $newProductID) {
-                $newProductData = $p;
-            }
-
-            if ($previousProductData !== false && $newProductData !== false)
-                break;
-        }
-
-        if ($previousProductData === false) {
-            $product = productTable::getProductById($previousProductID);
-            $previousProductData = new profilingItemProduct(0, $product);
-        }
-
-        if ($newProductData === false) {
-            $product = productTable::getProductById($previousProductID);
-            $newProductData = new profilingItemProduct(0, $product);
-        }
-        */
-
         // Move old product profile
         $newProductData->moveToMiddle($previousProductData);
 
@@ -289,7 +268,7 @@ class profilerCtrl extends Controller {
             0, 0, 0, 1,
             0, 0, 0, 0, 0, 0, 0, 0, 1
         );
-        //$products[0]->setName('Man - Adult - CSP++ - Nice - Rugby');
+        $products[0]->setName('Man - Adult - CSP++ - Nice - Rugby');
         $products[0]->setStaticVars(array_combine($variables, $values));
 
         // Woman - Young - CSP- - Marseille - Football
@@ -403,5 +382,96 @@ class profilerCtrl extends Controller {
         );
 
         return json_encode($data);
+    }
+
+    /**
+     * Returns an array with the N most similar products compared to the product with ID $productId.
+     *
+     * @param int $productId Product to search for similars
+     * @param int $maxItems Maximum number of products in the result list
+     * @param int $similarRadius Radius within the products are considered similars
+     * @return array List of similar products
+     */
+    public function getSimilarProducts($productId, $maxItems, $similarRadius) {
+        $similars = array();
+
+        // Get central product from DB
+        $centralProduct = productTable::getProductById($productId);
+        if ($centralProduct) {
+
+            // Get profiles from DB
+            $profilesDB = profilingTable::getProfilings();
+            $centralProductProfile = profilingTable::getProfilingByProductId($productId);
+
+            if ($centralProductProfile && $profilesDB && count($profilesDB) > 0) {
+                $centralProductIndex = 0;
+                $productProfiles = array();
+                $pcaPoints = array();
+
+                for ($i = 0; $i < count($profilesDB); $i++) {
+                    $p = $profilesDB[$i];
+                    $productItem = $this->importItemProductFromDB($p);
+                    $productProfiles[] = $productItem;
+                    $pcaPoints[] = array_values($productItem->getVars());
+
+                    // Store the index of the central product for later
+                    if ($productItem->getProduct()->id == $productId)
+                        $centralProductIndex = $i;
+                }
+
+                // Principal Component Analysis to get the coordinates in orthogonal axes
+                $pca = new PCA\PCA($pcaPoints);
+                $pca->changeDimension(2);
+                $pca->applayingPca();
+                $pcaResult = $pca->getNewData();
+
+                // Get PCA coordinates for central product
+                $centralProductCoords = $pcaResult[$centralProductIndex];
+
+                // Calculate distance for each product
+                foreach ($pcaResult as $i => $pcaCoords) {
+                    $sumSquareCoords = 0;
+                    foreach ($pcaCoords as $j => $coord) {
+                        $dist = $coord - $centralProductCoords[$j];
+                        $sumSquareCoords += $dist * $dist;
+                    }
+
+                    $distance = sqrt($sumSquareCoords);
+
+                    // Add to $similars each product within a range of $similarRadius
+                    if ($distance > 0 && $distance <= $similarRadius) {
+                        $similars[] = $productProfiles[$i]->getProduct();
+                    }
+                }
+            }
+
+
+            // If there are less products than the maximum, whe search similar products
+            // looking into some attributes
+            if (count($similars) < $maxItems) {
+                $products = productTable::getProductsByFilters(
+                    $centralProduct->id,
+                    $centralProduct->id_team->id,
+                    $centralProduct->id_sport->id,
+                    $centralProduct->type,
+                    $centralProduct->gender,
+                    $centralProduct->brand
+                );
+
+                $similars = array_merge(
+                    $similars,
+                    array_slice($products, 0, ($maxItems - count($similars)))
+                );
+            }
+        }
+
+        return $similars;
+    }
+
+    public function testSimilarProducts($productId) {
+        $similars = $this->getSimilarProducts($productId, 10, 0.9);
+        foreach ($similars as $s) {
+            echo '<div>(' . $s->id . ') ' . $s->name . '</div>';
+        }
     }
 }

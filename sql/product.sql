@@ -1,7 +1,7 @@
 DELETE FROM uapv1604137.product;
 
 INSERT INTO uapv1604137.product (id, id_sport, id_team, name, description, gender, size, price, promotion, type, brand, stock, image) VALUES (
-	0, 0, 3, 'Maillot OL (Homme)', 'Maillot Olympique Lyonnais, 100% polyester, taille adulte.', 'M', 'XS|S|M|L|XL|XXL', 69.99, 0, 'tee-shirt', 'Adidas', 21, ''
+	50, 0, 3, 'Maillot OL (Homme)', 'Maillot Olympique Lyonnais, 100% polyester, taille adulte.', 'M', 'XS|S|M|L|XL|XXL', 69.99, 0, 'tee-shirt', 'Adidas', 21, ''
 );
 INSERT INTO uapv1604137.product (id, id_sport, id_team, name, description, gender, size, price, promotion, type, brand, stock, image) VALUES (
 	1, 0, 3, 'Maillot OL (Femme)', 'Maillot Olympique Lyonnais, 100% polyester, taille adulte.', 'F', 'XS|S|M|L|XL|XXL', 59.99, 10, 'tee-shirt', 'Adidas', 9, ''

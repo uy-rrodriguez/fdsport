@@ -106,3 +106,44 @@
     ?>
 
 </div>
+
+
+<!-- Profiling viewer -->
+<div id="profiling-viewer" class="d-flex flex-row">
+    <div class="fdsport-profiling-vars fdsport-flex-item-fill">
+        <?php foreach ($profile as $attrib => $value): ?>
+
+            <div class=" d-flex flex-column align-items-center fdsport-profiling-var-item">
+                <span class="fdsport-profiling-var-name"><?= $attrib ?></span>
+                <span class="fdsport-profiling-var-value fdsport-flex-item-fill"><?= number_format($value, 6) ?></span>
+            </div>
+
+        <?php endforeach; ?>
+    </div>
+    <div class="d-flex justify-content-around flex-column fdsport-profiling-btn-wrapper">
+        <a href="<?= BASE_URL . '/profiler' ?>" target="_blank" class="btn btn-primary fdsport-btn-show-graph">Afficher le graphe</a>
+        <button class="btn btn-secondary fdsport-btn-hide-viewer">Minimiser</button>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        var viewer = $("#profiling-viewer");
+
+        viewer.find(".fdsport-btn-show-graph").click(function (evt) {
+            evt.stopPropagation();
+        });
+
+        viewer.find(".fdsport-btn-hide-viewer").click(function (evt) {
+            evt.preventDefault();
+            viewer.addClass("minimized");
+            evt.stopPropagation();
+        });
+
+        viewer.click(function (evt) {
+            evt.preventDefault();
+            if (viewer.hasClass("minimized"))
+                viewer.removeClass("minimized");
+        });
+    });
+</script>

@@ -7,6 +7,21 @@ class productCtrl extends Controller {
         parent::__construct($plates);
     }
 
+    private function getAssociatedProducts($id) {
+        $associatedDB = (new profilerCtrl($this->plates))->getSimilarProducts($id, 10, 0.9);
+        $associated = array();
+        foreach ($associatedDB as $p) {
+            $associated[] = array(
+                'id' => $p->id,
+                'name' => $p->name,
+                'price' => $p->price,
+                'discount' => $p->promotion,
+                'image' => 'holder.js/200x200?text=IMG'
+            );
+        }
+        return $associated;
+    }
+
     public function show($id) {
 
         // Update profiling
@@ -51,7 +66,10 @@ class productCtrl extends Controller {
         );
 
         // Associated products
-        $products = array();
+        $products = $this->getAssociatedProducts($id);
+        //$products = array();
+
+        /*
         for ($i = 1; $i <= 5; $i++) {
             $products[] = array(
                 'id' => $i,
@@ -61,8 +79,18 @@ class productCtrl extends Controller {
                 'image' => 'holder.js/200x200?text=IMG'
             );
         }
+        */
 
-        echo $this->plates->render('product', ['title' => 'Product '.$id, 'product' => $product, 'recommended' => $products]);
+        // Product profiling data
+        $profilingData = profilingTable::getProfilingByProductId($id);
+        $productProfile = json_decode($profilingData->profil)->vars;
+
+        echo $this->plates->render('product', [
+            'title' => $product['name'],
+            'product' => $product,
+            'recommended' => $products,
+            'profile' => $productProfile
+        ]);
     }
 
     public function all() {

@@ -45,6 +45,30 @@ class profilingTable
         
     }
 
+    public static function getProfilingByProductId($productId)
+    {
+
+        $em = dbconnection::getInstance()->getEntityManager();
+
+        $product = $em->find('product', $productId);
+
+        $profilingRepository = $em->getRepository('profiling');
+
+        $profiling = $profilingRepository->findOneBy(array(
+            'product'    =>  $product
+        ));
+
+        if ($profiling == false)
+        {
+
+            return null;
+
+        }
+
+        return $profiling;
+
+    }
+
     public static function save(profiling $profiling)
     {
         $em = dbconnection::getInstance()->getEntityManager();
