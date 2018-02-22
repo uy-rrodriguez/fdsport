@@ -14,7 +14,6 @@ define('DB',	'dai1mbra56rc92');
 */
 
 $dbstr = getenv('DATABASE_URL');
-var_dump($dbstr);
 $matches = null;
 preg_match('/^postgres:\\/\\/(.+):(.+)@(.+):(.+)\\/(.+)$/', $dbstr, $matches);
 
@@ -23,19 +22,6 @@ $dbpassword = $matches[2];
 $dbhost = $matches[3];
 $dbport = $matches[4];
 $dbname = $matches[5];
-
-/*
-$dbstr = substr("$dbstr", 8);
-$dbstrarruser = explode(":", $dbstr);
-$dbstrarrhost = explode("@", $dbstrarruser[1]);
-$dbstrarrrecon = explode("?", $dbstrarrhost[1]);
-$dbstrarrport = explode("/", $dbstrarrrecon[0]);
-$dbpassword = $dbstrarrhost[0];
-$dbhost = $dbstrarrport[0];
-$dbport = $dbstrarrport[0];
-$dbuser = $dbstrarruser[0];
-$dbname = $dbstrarrport[1];
-*/
 
 define('HOST',	$dbhost);
 define('USER',	$dbuser);
