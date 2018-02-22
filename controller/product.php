@@ -25,8 +25,8 @@ class productCtrl extends Controller {
     public function show($id) {
 
         // Update profiling
-        $profiler = new profilerCtrl($this->plates);
-        $profiler->updateUser($id);
+        //$profiler = new profilerCtrl($this->plates);
+        //$profiler->updateUser($id);
         
         /*
         // Product data
@@ -66,10 +66,9 @@ class productCtrl extends Controller {
         );
 
         // Associated products
-        $products = $this->getAssociatedProducts($id);
-        //$products = array();
-
-        /*
+        //$products = $this->getAssociatedProducts($id);
+        
+        $products = array();
         for ($i = 1; $i <= 5; $i++) {
             $products[] = array(
                 'id' => $i,
@@ -79,11 +78,11 @@ class productCtrl extends Controller {
                 'image' => 'holder.js/200x200?text=IMG'
             );
         }
-        */
 
         // Product profiling data
+        $productProfile = array();
         $profilingData = profilingTable::getProfilingByProductId($id);
-        $productProfile = json_decode($profilingData->profil)->vars;
+        if ($profilingData) $productProfile = json_decode($profilingData->profil)->vars;
 
         echo $this->plates->render('product', [
             'title' => $product['name'],
