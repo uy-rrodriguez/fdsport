@@ -25,8 +25,8 @@ class productCtrl extends Controller {
     public function show($id) {
 
         // Update profiling
-        //$profiler = new profilerCtrl($this->plates);
-        //$profiler->updateUser($id);
+        $profiler = new profilerCtrl($this->plates);
+        $profiler->updateUser($id);
         
         /*
         // Product data
