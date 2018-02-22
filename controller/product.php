@@ -66,8 +66,9 @@ class productCtrl extends Controller {
         );
 
         // Associated products
-        //$products = $this->getAssociatedProducts($id);
+        $products = $this->getAssociatedProducts($id);
         
+        /*
         $products = array();
         for ($i = 1; $i <= 5; $i++) {
             $products[] = array(
@@ -78,6 +79,7 @@ class productCtrl extends Controller {
                 'image' => 'holder.js/200x200?text=IMG'
             );
         }
+        */
 
         // Product profiling data
         $productProfile = array();

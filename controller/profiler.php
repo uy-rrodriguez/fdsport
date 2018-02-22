@@ -402,6 +402,7 @@ class profilerCtrl extends Controller {
         $centralProduct = productTable::getProductById($productId);
         if ($centralProduct) {
 
+            /*
             // Get profiles from DB
             $profilesDB = profilingTable::getProfilings();
             $centralProductProfile = profilingTable::getProfilingByProductId($productId);
@@ -447,6 +448,7 @@ class profilerCtrl extends Controller {
                     }
                 }
             }
+            */
 
 
             // If there are less products than the maximum, whe search similar products
