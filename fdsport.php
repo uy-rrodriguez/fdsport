@@ -20,7 +20,7 @@ $plates = new League\Plates\Engine('view');
 
     
 // Get controller, method and id from request URL
-$request = (isset($_GET['request']) ? $_GET['request'] : ''); 
+$request = (isset($_GET['request']) ? $_GET['request'] : ''); var_dump($request);
 $request = explode('/', $request); 
 
 $controller = (!empty($request[0]) ? $request[0] : 'index');
