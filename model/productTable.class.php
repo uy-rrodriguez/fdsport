@@ -53,7 +53,7 @@ class productTable
         $rsm = new \Doctrine\ORM\Query\ResultSetMappingBuilder($em);
         $rsm->addRootEntityFromClassMetadata('product', 'p');
 
-        $generic = 'SELECT * FROM product p WHERE p.id != :ignoreId AND';
+        $generic = 'SELECT * FROM uapv1604137.product p WHERE p.id != :ignoreId AND';
         $sql = $generic . ' 1 = 0';
         if ($team)      $sql .= ' UNION ALL ' . $generic . ' p.id_team = :team';
         if ($sport)     $sql .= ' UNION ALL ' . $generic . ' p.id_sport = :sport';
