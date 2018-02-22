@@ -169,7 +169,7 @@ class profilerCtrl extends Controller {
         $_SESSION['profiling_user'] = $this->userProfile;
 
         // If it is a new product, we store it in the DB
-        if ($productUnset) {
+        if ($productUnset && ! $productData->isUnset()) {
             profilingTable::save($this->exportItemProductToDB($productData));
         }
 
@@ -192,8 +192,11 @@ class profilerCtrl extends Controller {
         $newProductData->moveToMiddle($previousProductData);
 
         // Store product data
-        profilingTable::save($this->exportItemProductToDB($previousProductData));
-        profilingTable::save($this->exportItemProductToDB($newProductData));
+        if (! $previousProductData->isUnset())
+            profilingTable::save($this->exportItemProductToDB($previousProductData));
+        
+        if (! $newProductData->isUnset())
+            profilingTable::save($this->exportItemProductToDB($newProductData));
     }
 
     /**
