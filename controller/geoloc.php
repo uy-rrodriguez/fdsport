@@ -40,13 +40,15 @@ class geolocCtrl extends Controller {
     public function findNearestTeam($latlng)
     {
         //echo 'findNearestTeam: $latlng = '; var_dump($latlng); echo '<br>';
-        $latlngObj = json_decode($latlng);
+        $latlngArray = explode(',', $latlng);
+        $lat = $latlngArray[0];
+        $lng = $latlngArray[1];
 
         $nearestTeam = null;
         $minDistance = null;
 
 
-        $address = $this->getGeolocalizedAddress($latlngObj->lat, $latlngObj->lng);
+        $address = $this->getGeolocalizedAddress($lat, $lng);
 
         if ($address == null)
         {
