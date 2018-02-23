@@ -1,5 +1,6 @@
 <?php
 require_once 'controller.php';
+require_once 'geoloc.php';
 
 class indexCtrl extends Controller {
     function __construct($plates) {
@@ -10,14 +11,12 @@ class indexCtrl extends Controller {
         $_SESSION['team_geoloc'] = null;
         $_SESSION['sport_geoloc'] = null;
 
+        $geolocCtrl = new geolocCtrl($this->plates);
 
-        require_once '../distance_matrix_api.php';
-
-        $city = getGeolocalizedCity();
+        $city = $geolocCtrl->getGeolocalizedCity();
         echo 'City: '; var_dump($city); echo '<br>';
 
-        $api = new DistanceMatrixApi();
-        $team = $api->findNearestTeam($city);
+        $team = $geolocCtrl->findNearestTeam($city);
         echo 'Team: '; var_dump($team); echo '<br>';
 
         if ($team != null) {
