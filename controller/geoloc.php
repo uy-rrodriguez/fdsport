@@ -17,7 +17,7 @@ class geolocCtrl extends Controller {
     public function getGeolocalizedAddress($lat, $lng)
     {
 
-        echo 'getGeolocalizedAddress: $lat = ' . $lat . '; $lng = ' . $lng; echo '<br>';
+        //echo 'getGeolocalizedAddress: $lat = ' . $lat . '; $lng = ' . $lng; echo '<br>';
 
         $url = str_replace(array('[lat]', '[lng]', '[key]'), array($lat, $lng, $this->geocodingApiKey), $this->geocodingUrl);
 
@@ -25,7 +25,7 @@ class geolocCtrl extends Controller {
 
         $info = json_decode($result, true);
 
-        echo 'getGeolocalizedAddress: $url = ' . $url . '; $result = ' . $result . '; $info = '; var_dump($info); echo '<br>';
+        //echo 'getGeolocalizedAddress: $url = ' . $url . '; $result = ' . $result . '; $info = '; var_dump($info); echo '<br>';
 
         if ($info)
         {
@@ -62,7 +62,7 @@ class geolocCtrl extends Controller {
 
     public function findNearestTeam($latlng)
     {
-        echo 'findNearestTeam: $latlng = '; var_dump($latlng); echo '<br>';
+        //echo 'findNearestTeam: $latlng = '; var_dump($latlng); echo '<br>';
         $latlngObj = json_decode($latlng);
 
 
