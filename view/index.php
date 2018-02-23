@@ -5,6 +5,25 @@
     <div id="logo-mobile"></div>
 </div>
 
+
+<pre id="geoloc"></pre>
+<script>
+    $(function () {
+        function maPosition(position) {
+            var infopos = "Position déterminée :\n";
+            infopos += "Latitude : "+position.coords.latitude +"\n";
+            infopos += "Longitude: "+position.coords.longitude+"\n";
+            infopos += "Altitude : "+position.coords.altitude +"\n";
+            $("#geoloc").html(infopos);
+        }
+
+        if(navigator.geolocation)
+            navigator.geolocation.getCurrentPosition(maPosition);
+    })
+</script>
+
+
+
 <div class="d-md-none fdsport-line"></div>
 
 <!-- Carousel Next matches -->

@@ -8,9 +8,6 @@ class indexCtrl extends Controller {
     }
 
     private function loadTeamByGeoloc() {
-        $_SESSION['team_geoloc'] = null;
-        $_SESSION['sport_geoloc'] = null;
-
         $geolocCtrl = new geolocCtrl($this->plates);
 
         $city = $geolocCtrl->getGeolocalizedCity();
@@ -63,7 +60,9 @@ class indexCtrl extends Controller {
         $sport_geoloc = 'Football';
         $team_geoloc = 'Olympique Lyonnais';
 
-        $this->loadTeamByGeoloc();
+        $_SESSION['team_geoloc'] = null;
+        $_SESSION['sport_geoloc'] = null;
+        //$this->loadTeamByGeoloc();
         
         //$context = context::getInstance();
         
