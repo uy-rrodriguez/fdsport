@@ -103,7 +103,7 @@ class geolocCtrl extends Controller {
 
     private function getDistanceAddressCity($address, $destination)
     {
-        echo 'findFromCity: $address = ' . $address . '; $destination = ' . $destination; echo '<br>';
+        //echo 'findFromCity: $address = ' . $address . '; $destination = ' . $destination; echo '<br>';
 
         if ($address == null)
         {
@@ -126,7 +126,7 @@ class geolocCtrl extends Controller {
 
     private function sendDistanceRequest($data)
     {
-        echo 'sendDistanceRequest: $data = '; var_dump($data); echo '<br>';
+        //echo 'sendDistanceRequest: $data = '; var_dump($data); echo '<br>';
 
 
         $url = sprintf("%s?%s", $this->distanceUrl.$this->distanceFormat, http_build_query($data));
@@ -135,7 +135,7 @@ class geolocCtrl extends Controller {
 
         $info = json_decode($result, true);
 
-        echo 'sendDistanceRequest: $url = ' . $url . '; $result = ' . $result . '; $info = '; var_dump($info); echo '<br>';
+        //echo 'sendDistanceRequest: $url = ' . $url . '; $result = ' . $result . '; $info = '; var_dump($info); echo '<br>';
 
         if ($info)
         {
