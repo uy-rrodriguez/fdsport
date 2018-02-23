@@ -21,7 +21,6 @@
                 lat: position.coords.latitude,
                 lng: position.coords.longitude
             };
-            alert(JSON.stringify(data));
 
             $.ajax({
                 method: "POST",

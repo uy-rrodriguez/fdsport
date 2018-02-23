@@ -83,7 +83,7 @@ class geolocCtrl extends Controller {
         {
             $distance = $this->getDistanceAddressCity($address, $team->city);
             echo 'Distance: ' . $distance . '<br>';
-            
+
             if ($distance && ($nearestTeam == null || $distance < $minDistance))
             {
                 $nearestTeam = $team;
@@ -91,7 +91,7 @@ class geolocCtrl extends Controller {
             }
         }
 
-        return 'TEAM: ' . $nearestTeam;
+        return 'TEAM: ' . $nearestTeam->name;
 
     }
 
