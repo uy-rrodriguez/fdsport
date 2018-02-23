@@ -27,7 +27,7 @@
                 method: "POST",
                 url: "<?= BASE_URL . '/geoloc/findNearestTeam/' ?>" + JSON.stringify(data),
                 success: function (data, status, jqXHR) {
-                    alert(data);
+                    $("#geoloc").html(data);
                 }
             });
         }
