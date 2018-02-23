@@ -43,6 +43,7 @@ class dbconnection
 	{
 
 		$config = Setup::createAnnotationMetadataConfiguration(array("../../model/"), true);
+        $config->setAutoGenerateProxyClasses(TRUE);
 
 		$param = array(
 			'dbname'	=>	DB,
