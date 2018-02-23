@@ -63,6 +63,8 @@ class indexCtrl extends Controller {
         // Search team and sport by geolocalization
         $sport_geoloc = 'Football';
         $team_geoloc = 'Olympique Lyonnais';
+
+        $this->loadTeamByGeoloc();
         
         //$context = context::getInstance();
         
