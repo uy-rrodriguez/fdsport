@@ -35,8 +35,8 @@ class indexCtrl extends Controller {
         $sport_geoloc = 'Football';
         $team_geoloc = 'Olympique Lyonnais';
 
-        $_SESSION['sport_geoloc'] = null;
-        $_SESSION['team_geoloc'] = null;
+        //$_SESSION['sport_geoloc'] = null;
+        //$_SESSION['team_geoloc'] = null;
 
         $sportInSession = (isset($_SESSION['sport_geoloc']) ? $_SESSION['sport_geoloc'] : null);
         $teamInSession = (isset($_SESSION['team_geoloc']) ? $_SESSION['team_geoloc'] : null);
