@@ -69,7 +69,7 @@
 
             $.ajax({
                 method: "POST",
-                url: "<?= BASE_URL . '/geoloc/findNearestTeam/' ?>" + JSON.stringify(data),
+                url: "<?= BASE_URL . '/geoloc/getTeamSportData/' ?>" + JSON.stringify(data),
 
                 beforeSend: function () {
                     team.html("Chargement...");

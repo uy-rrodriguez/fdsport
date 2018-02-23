@@ -32,11 +32,14 @@ class indexCtrl extends Controller {
 
 
         // Search team and sport by geolocalization
-        $sport_geoloc = '';
-        $team_geoloc = '';
+        $sport_geoloc = 'Football';
+        $team_geoloc = 'Olympique Lyonnais';
 
-        $sportInSession = (isset($_SESSION['sport_geoloc']) ? $_SESSION['sport_geoloc'] : 'Football');
-        $teamInSession = (isset($_SESSION['team_geoloc']) ? $_SESSION['team_geoloc'] : 'Olympique Lyonnais');
+        $_SESSION['sport_geoloc'] = null;
+        $_SESSION['team_geoloc'] = null;
+
+        $sportInSession = (isset($_SESSION['sport_geoloc']) ? $_SESSION['sport_geoloc'] : null);
+        $teamInSession = (isset($_SESSION['team_geoloc']) ? $_SESSION['team_geoloc'] : null);
         
         if ($sportInSession)
         {
@@ -45,7 +48,7 @@ class indexCtrl extends Controller {
         
         }
         
-        if ($teamInSession != null)
+        if ($teamInSession)
         {
         
             $team_geoloc = $teamInSession->name;

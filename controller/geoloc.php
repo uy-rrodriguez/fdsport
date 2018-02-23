@@ -42,7 +42,6 @@ class geolocCtrl extends Controller {
         //echo 'findNearestTeam: $latlng = '; var_dump($latlng); echo '<br>';
         $latlngObj = json_decode($latlng);
 
-
         $nearestTeam = null;
         $minDistance = null;
 
@@ -51,7 +50,7 @@ class geolocCtrl extends Controller {
 
         if ($address == null)
         {
-            return 'NO ADDRESS';
+            return null;
         }
 
         $teams = teamTable::getTeams();
@@ -59,7 +58,6 @@ class geolocCtrl extends Controller {
         foreach ($teams as $team)
         {
             $distance = $this->getDistanceAddressCity($address, $team->city);
-            echo 'Distance: ' . $distance . '<br>';
 
             if ($distance && ($nearestTeam == null || $distance < $minDistance))
             {
