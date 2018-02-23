@@ -22,7 +22,7 @@ $city = getGeolocalizedCity();
 
 $api = new DistanceMatrixApi();
 
-$team = findNearestTeam($city);
+$team = $api->findNearestTeam($city);
 
 if ($team != null)
 {
