@@ -77,11 +77,18 @@
                 },
 
                 success: function (data, status, jqXHR) {
-                    alert(data);
+                    console.log(data);
                     var dataObj = JSON.parse(data);
+                    console.log(dataObj);
 
-                    team.html(dataObj.team);
-                    sport.html(dataObj.sport);
+                    if (dataObj) {
+                        team.html(dataObj.team);
+                        sport.html(dataObj.sport);
+                    }
+                    else {
+                        team.html("");
+                        sport.html("");
+                    }
                 },
 
                 error: function () {
