@@ -24,7 +24,21 @@ $api = new DistanceMatrixApi();
 
 $team = findNearestTeam($city);
 
-// $team = object::team || null
+if ($team != null)
+{
+
+    $context->setSessionAttribute('team_geoloc', $team->name);
+
+    $sport = sportTable::getSportById($team->id_sport);
+    
+    if ($sport != null)
+    {
+    
+        $context->setSessionAttribute('sport_geoloc', $sport->name);
+    
+    }
+
+}
 
 //////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////

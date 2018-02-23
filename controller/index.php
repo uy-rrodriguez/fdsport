@@ -33,8 +33,31 @@ class indexCtrl extends Controller {
             
         }
 
+        /*
         $sport_geoloc = 'Football';
         $team_geoloc = 'Olympique Lyonnais';
+        */
+        
+        $sport_geoloc = 'Football';
+        $team_geoloc = 'Olympique Lyonnais';
+        
+        $sportInContext = $context->getSessionAttribute('sport_geoloc');
+        
+        if ($sportInContext != null)
+        {
+        
+            $sport_geoloc = sportInContext;
+        
+        }
+        
+        $teamInContext = $context->getSessionAttribute('team_geoloc');
+        
+        if ($teamInContext != null)
+        {
+        
+            $team_geoloc = $teamInContext;
+        
+        }
 
         /*
         $products = array();
