@@ -13,7 +13,7 @@ class team
 	public $id;
 
 	/**
-	* @OneToOne(targetEntity="sport")
+	* @OneToOne(targetEntity="sport", fetch="EAGER")
 	* @JoinColumn(name="id_sport", referencedColumnName ="id")
 	*/
 	public $id_sport;
