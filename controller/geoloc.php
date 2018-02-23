@@ -3,18 +3,45 @@ require_once 'controller.php';
 
 class geolocCtrl extends Controller {
 
-    private $baseUrl	=	'https://maps.googleapis.com/maps/api/distancematrix/';
-    private $format	    =	'json';
-    private $apiKey     = 'AIzaSyClfgOKcDVmEb3Id7loq-Ekx30NA_t5TuU';
+    private $distanceUrl	        =	'https://maps.googleapis.com/maps/api/distancematrix/';
+    private $geocodingUrl	        =	'https://maps.googleapis.com/maps/api/geocode/json?latlng=[lat],[lng]&key=[key]';
+    private $distanceFormat	        =	'json';
+    private $distanceApiKey         =   'AIzaSyClfgOKcDVmEb3Id7loq-Ekx30NA_t5TuU';
+    private $geocodingApiKey        =   'AIzaSyBVKC8oUa2z1HnWPOTo9T89NAbx6U8LygA';
 
     function __construct($plates)
     {
         parent::__construct($plates);
     }
 
-    public function getGeolocalizedCity()
+    public function getGeolocalizedAddress($lat, $lng)
     {
 
+        echo 'getGeolocalizedAddress: $lat = ' . $lat . '; $lng = ' . $lng; echo '<br>';
+
+        $url = str_replace(array('[lat]', '[lng]', '[key]'), array($lat, $lng, $this->geocodingApiKey), $this->distanceUrl);
+
+        $result = file_get_contents($url);
+
+        $info = json_decode($result, true);
+
+        echo 'getGeolocalizedAddress: $url = ' . $url . '; $result = ' . $result . '; $info = '; var_dump($info); echo '<br>';
+
+        if ($info)
+        {
+
+            if (isset($info['results'][0]['formatted_address']))
+            {
+
+                return $info['results'][0]['formatted_address'];
+
+            }
+
+        }
+
+        return null;
+
+        /*
         $user_ip = getenv('REMOTE_ADDR');
         $url = 'http://www.geoplugin.net/php.gp?ip=' . $user_ip;
 
@@ -30,12 +57,13 @@ class geolocCtrl extends Controller {
         }
 
         return null;
-
+        */
     }
 
-    public function findNearestTeam($city, $latitude = null, $longitude = null)
+    public function findNearestTeam($latlng)
     {
-        echo 'findNearestTeam: $city = ' . $city . '; url = ' . $latitude . '; $longitude = ' . $latitude; echo '<br>';
+        echo 'findNearestTeam: $latlng = '; var_dump($latlng); echo '<br>';
+        $latlngObj = json_decode($latlng);
 
 
         $nearestTeam = array(
@@ -43,19 +71,19 @@ class geolocCtrl extends Controller {
             'distance'  =>  null
         );
 
-        if ($city == null)
+
+        $address = $this->getGeolocalizedAddress($latlngObj->lat, $latlngObj->lng);
+
+        if ($address == null)
         {
-            if ($latitude == null || $longitude == null)
-            {
-                return null;
-            }
+            return null;
         }
 
         $teams = teamTable::getTeams();
 
         foreach ($teams as $team)
         {
-            $result = $this->findFromCity($city, $team->city);
+            $result = $this->getDistanceAddressCity($address, $team->city);
 
             if ($result)
             {
@@ -73,41 +101,41 @@ class geolocCtrl extends Controller {
 
     }
 
-    private function findFromCity($city, $destinations)
+    private function getDistanceAddressCity($address, $destination)
     {
-        echo 'findFromCity: $city = ' . $city . '; $destinations = ' . $destinations; echo '<br>';
+        echo 'findFromCity: $address = ' . $address . '; $destination = ' . $destination; echo '<br>';
 
-        if ($city == null)
+        if ($address == null)
         {
 
             return null;
 
         }
 
-        $origins = strtolower($city);
+        $origin = strtolower($address);
 
         $data = [
-            'origins'		=>	$origins,
-            'destinations'	=>	$destinations,
-            'key'			=>	$this->apiKey
+            'origins'		=>	$origin,
+            'destinations'	=>	$destination,
+            'key'			=>	$this->distanceApiKey
         ];
 
-        return $this->sendApiRequest($data);
+        return $this->sendDistanceRequest($data);
 
     }
 
-    private function sendApiRequest($data)
+    private function sendDistanceRequest($data)
     {
-        echo 'sendApiRequest: $data = '; var_dump($data); echo '<br>';
+        echo 'sendDistanceRequest: $data = '; var_dump($data); echo '<br>';
 
 
-        $url = sprintf("%s?%s", $this->baseUrl.$this->format, http_build_query($data));
+        $url = sprintf("%s?%s", $this->distanceUrl.$this->distanceFormat, http_build_query($data));
 
         $result = file_get_contents($url);
 
         $info = json_decode($result, true);
 
-        echo 'sendApiRequest: $url = ' . $url . '; $result = ' . $result . '; $info = '; var_dump($info); echo '<br>';
+        echo 'sendDistanceRequest: $url = ' . $url . '; $result = ' . $result . '; $info = '; var_dump($info); echo '<br>';
 
         if ($info)
         {

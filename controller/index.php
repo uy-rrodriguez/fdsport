@@ -7,7 +7,9 @@ class indexCtrl extends Controller {
         parent::__construct($plates);
     }
 
-    private function loadTeamByGeoloc() {
+    public function loadTeamByGeoloc($latLong) {
+        $latLongObj = json_decode($latLong);
+
         $geolocCtrl = new geolocCtrl($this->plates);
 
         $city = $geolocCtrl->getGeolocalizedCity();

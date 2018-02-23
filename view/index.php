@@ -15,11 +15,50 @@
             infopos += "Longitude: "+position.coords.longitude+"\n";
             infopos += "Altitude : "+position.coords.altitude +"\n";
             $("#geoloc").html(infopos);
+
+
+            var data = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+            };
+            alert(JSON.stringify(data));
+
+            $.ajax({
+                method: "POST",
+                url: "<?= BASE_URL . '/geoloc/findNearestTeam/' ?>" + JSON.stringify(data),
+                success: function (data, status, jqXHR) {
+                    alert(data);
+                }
+            });
         }
 
-        if(navigator.geolocation)
-            navigator.geolocation.getCurrentPosition(maPosition);
-    })
+        // Fonction de callback en cas d’erreur
+        function erreurPosition(error) {
+            var info = "Erreur lors de la géolocalisation : ";
+            switch(error.code) {
+                case error.TIMEOUT:
+                    info += "Timeout !";
+                    break;
+                case error.PERMISSION_DENIED:
+                    info += "Vous n’avez pas donné la permission";
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    info += "La position n’a pu être déterminée";
+                    break;
+                case error.UNKNOWN_ERROR:
+                    info += "Erreur inconnue";
+                    break;
+            }
+            $("#geoloc").html(infopos);
+        }
+
+        if(navigator.geolocation) {
+            // Le paramètre maximumAge met en cache la position
+            // pour une durée de 600000 millisecondes (10 minutes),
+            // ainsi la position est mise à jour toutes les 10 minutes au maximum.
+            navigator.geolocation.getCurrentPosition(maPosition, erreurPosition, {maximumAge: 600000});
+        }
+    });
 </script>
 
 
