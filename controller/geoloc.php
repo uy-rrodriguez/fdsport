@@ -30,7 +30,7 @@ class geolocCtrl extends Controller {
 
             if ($sport) {
                 $_SESSION['sport_geoloc'] = $sport;
-                $data['sport'] = $sport->name;
+                $data['sport'] = ucfirst($sport->name);
             }
         }
 
