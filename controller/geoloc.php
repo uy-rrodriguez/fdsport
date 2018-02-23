@@ -26,14 +26,12 @@ class geolocCtrl extends Controller {
             $_SESSION['team_geoloc'] = $team;
             $data['team'] = $team->name;
 
-            /*
             $sport = sportTable::getSportById($team->id_sport);
 
             if ($sport) {
                 $_SESSION['sport_geoloc'] = $sport;
                 $data['sport'] = $sport->name;
             }
-            */
         }
 
         die(json_encode($data));
