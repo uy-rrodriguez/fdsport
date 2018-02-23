@@ -12,38 +12,6 @@ $nameApp = 'fdsport';
 $context = context::getInstance();
 $context->init($nameApp);
 
-//////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////
-
-require_once 'distance_matrix_api.php';
-
-$city = getGeolocalizedCity();
-
-$api = new DistanceMatrixApi();
-
-$team = $api->findNearestTeam($city);
-
-if ($team != null)
-{
-
-    $context->setSessionAttribute('team_geoloc', $team->name);
-
-    $sport = sportTable::getSportById($team->id_sport);
-    
-    if ($sport != null)
-    {
-    
-        $context->setSessionAttribute('sport_geoloc', $sport->name);
-    
-    }
-
-}
-
-//////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////
-
 // Create new Plates instance using the folder "view"
 $plates = new League\Plates\Engine('view');
 

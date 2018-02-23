@@ -5,7 +5,33 @@ class indexCtrl extends Controller {
     function __construct($plates) {
         parent::__construct($plates);
     }
-    
+
+    private function loadTeamByGeoloc() {
+        $_SESSION['team_geoloc'] = null;
+        $_SESSION['sport_geoloc'] = null;
+
+
+        require_once '../distance_matrix_api.php';
+
+        $city = getGeolocalizedCity();
+        echo 'City: '; var_dump($city); echo '<br>';
+
+        $api = new DistanceMatrixApi();
+        $team = $api->findNearestTeam($city);
+        echo 'Team: '; var_dump($team); echo '<br>';
+
+        if ($team != null) {
+            $_SESSION['team_geoloc'] = $team->name;
+
+            $sport = sportTable::getSportById($team->id_sport);
+            echo 'Sport: '; var_dump($sport); echo '<br>';
+
+            if ($sport != null) {
+                $_SESSION['sport_geoloc'] = $sport->name;
+            }
+        }
+    }
+
     public function index() {
         
         /*
@@ -33,26 +59,25 @@ class indexCtrl extends Controller {
             
         }
 
-        /*
-        $sport_geoloc = 'Football';
-        $team_geoloc = 'Olympique Lyonnais';
-        */
-        
+
+        // Search team and sport by geolocalization
         $sport_geoloc = 'Football';
         $team_geoloc = 'Olympique Lyonnais';
         
-        $context = context::getInstance();
+        //$context = context::getInstance();
         
-        $sportInContext = $context->getSessionAttribute('sport_geoloc');
+        //$sportInContext = $context->getSessionAttribute('sport_geoloc');
+        $sportInContext = $_SESSION['sport_geoloc'];
         
         if ($sportInContext != null)
         {
         
-            $sport_geoloc = sportInContext;
+            $sport_geoloc = $sportInContext;
         
         }
         
-        $teamInContext = $context->getSessionAttribute('team_geoloc');
+        //$teamInContext = $context->getSessionAttribute('team_geoloc');
+        $teamInContext = $_SESSION['team_geoloc'];
         
         if ($teamInContext != null)
         {
@@ -72,7 +97,8 @@ class indexCtrl extends Controller {
             );
         }
         */
-        
+
+        // Load index products
         $productsInDB = productTable::getProducts();
         
         $littlePrice = array();
