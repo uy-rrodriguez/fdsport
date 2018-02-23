@@ -36,7 +36,7 @@ class geolocCtrl extends Controller {
             */
         }
 
-        return json_encode($data);
+        die(json_encode($data));
     }
 
     public function findNearestTeam($latlng)
