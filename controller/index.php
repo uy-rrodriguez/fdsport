@@ -41,6 +41,8 @@ class indexCtrl extends Controller {
         $sport_geoloc = 'Football';
         $team_geoloc = 'Olympique Lyonnais';
         
+        $context = context::getInstance();
+        
         $sportInContext = $context->getSessionAttribute('sport_geoloc');
         
         if ($sportInContext != null)
