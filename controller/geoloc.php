@@ -19,7 +19,7 @@ class geolocCtrl extends Controller {
 
         echo 'getGeolocalizedAddress: $lat = ' . $lat . '; $lng = ' . $lng; echo '<br>';
 
-        $url = str_replace(array('[lat]', '[lng]', '[key]'), array($lat, $lng, $this->geocodingApiKey), $this->distanceUrl);
+        $url = str_replace(array('[lat]', '[lng]', '[key]'), array($lat, $lng, $this->geocodingApiKey), $this->geocodingUrl);
 
         $result = file_get_contents($url);
 
