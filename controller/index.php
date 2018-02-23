@@ -7,29 +7,6 @@ class indexCtrl extends Controller {
         parent::__construct($plates);
     }
 
-    public function loadTeamByGeoloc($latLong) {
-        $latLongObj = json_decode($latLong);
-
-        $geolocCtrl = new geolocCtrl($this->plates);
-
-        $city = $geolocCtrl->getGeolocalizedCity();
-        echo 'City: '; var_dump($city); echo '<br>';
-
-        $team = $geolocCtrl->findNearestTeam($city);
-        echo 'Team: '; var_dump($team); echo '<br>';
-
-        if ($team != null) {
-            $_SESSION['team_geoloc'] = $team->name;
-
-            $sport = sportTable::getSportById($team->id_sport);
-            echo 'Sport: '; var_dump($sport); echo '<br>';
-
-            if ($sport != null) {
-                $_SESSION['sport_geoloc'] = $sport->name;
-            }
-        }
-    }
-
     public function index() {
         
         /*
@@ -42,9 +19,7 @@ class indexCtrl extends Controller {
         
         foreach ($sportsInDB as $sport)
         {
-            
             $sports[] = ucfirst($sport->name);
-            
         }
         
         $teamsInDB = teamTable::getTeams();
@@ -52,39 +27,28 @@ class indexCtrl extends Controller {
         
         foreach ($teams as $team)
         {
-            
             $teams[] = $team->name;
-            
         }
 
 
         // Search team and sport by geolocalization
-        $sport_geoloc = 'Football';
-        $team_geoloc = 'Olympique Lyonnais';
+        $sport_geoloc = '';
+        $team_geoloc = '';
 
-        $_SESSION['team_geoloc'] = null;
-        $_SESSION['sport_geoloc'] = null;
-        //$this->loadTeamByGeoloc();
+        $sportInSession = (isset($_SESSION['sport_geoloc']) ? $_SESSION['sport_geoloc'] : 'Football');
+        $teamInSession = (isset($_SESSION['team_geoloc']) ? $_SESSION['team_geoloc'] : 'Olympique Lyonnais');
         
-        //$context = context::getInstance();
-        
-        //$sportInContext = $context->getSessionAttribute('sport_geoloc');
-        $sportInContext = $_SESSION['sport_geoloc'];
-        
-        if ($sportInContext != null)
+        if ($sportInSession)
         {
         
-            $sport_geoloc = $sportInContext;
+            $sport_geoloc = $sportInSession->name;
         
         }
         
-        //$teamInContext = $context->getSessionAttribute('team_geoloc');
-        $teamInContext = $_SESSION['team_geoloc'];
-        
-        if ($teamInContext != null)
+        if ($teamInSession != null)
         {
         
-            $team_geoloc = $teamInContext;
+            $team_geoloc = $teamInSession->name;
         
         }
 

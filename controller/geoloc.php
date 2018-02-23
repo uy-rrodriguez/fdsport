@@ -14,6 +14,65 @@ class geolocCtrl extends Controller {
         parent::__construct($plates);
     }
 
+    public function getTeamSportData($latlng) {
+        $data = array(
+            'team' => '',
+            'sport' => ''
+        );
+
+        $team = $this->findNearestTeam($latlng);
+
+        if ($team) {
+            $_SESSION['team_geoloc'] = $team;
+            $data['team'] = $team->name;
+
+            $sport = sportTable::getSportById($team->id_sport);
+
+            if ($sport) {
+                $_SESSION['sport_geoloc'] = $sport;
+                $data['sport'] = $sport->name;
+            }
+        }
+
+        return json_encode($data);
+    }
+
+    public function findNearestTeam($latlng)
+    {
+        //echo 'findNearestTeam: $latlng = '; var_dump($latlng); echo '<br>';
+        $latlngObj = json_decode($latlng);
+
+
+        $nearestTeam = null;
+        $minDistance = null;
+
+
+        $address = $this->getGeolocalizedAddress($latlngObj->lat, $latlngObj->lng);
+
+        if ($address == null)
+        {
+            return 'NO ADDRESS';
+        }
+
+        $teams = teamTable::getTeams();
+
+        foreach ($teams as $team)
+        {
+            $distance = $this->getDistanceAddressCity($address, $team->city);
+            echo 'Distance: ' . $distance . '<br>';
+
+            if ($distance && ($nearestTeam == null || $distance < $minDistance))
+            {
+                $nearestTeam = $team;
+                $minDistance = $distance;
+            }
+        }
+
+        return $nearestTeam;
+
+    }
+
+
     public function getGeolocalizedAddress($lat, $lng)
     {
 
@@ -58,41 +117,6 @@ class geolocCtrl extends Controller {
 
         return null;
         */
-    }
-
-    public function findNearestTeam($latlng)
-    {
-        //echo 'findNearestTeam: $latlng = '; var_dump($latlng); echo '<br>';
-        $latlngObj = json_decode($latlng);
-
-
-        $nearestTeam = null;
-        $minDistance = null;
-
-
-        $address = $this->getGeolocalizedAddress($latlngObj->lat, $latlngObj->lng);
-
-        if ($address == null)
-        {
-            return 'NO ADDRESS';
-        }
-
-        $teams = teamTable::getTeams();
-
-        foreach ($teams as $team)
-        {
-            $distance = $this->getDistanceAddressCity($address, $team->city);
-            echo 'Distance: ' . $distance . '<br>';
-
-            if ($distance && ($nearestTeam == null || $distance < $minDistance))
-            {
-                $nearestTeam = $team;
-                $minDistance = $distance;
-            }
-        }
-
-        return 'TEAM: ' . $nearestTeam->name;
-
     }
 
     private function getDistanceAddressCity($address, $destination)
