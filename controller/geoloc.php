@@ -66,38 +66,32 @@ class geolocCtrl extends Controller {
         $latlngObj = json_decode($latlng);
 
 
-        $nearestTeam = array(
-            'team'      =>  null,
-            'distance'  =>  null
-        );
+        $nearestTeam = null;
+        $minDistance = null;
 
 
         $address = $this->getGeolocalizedAddress($latlngObj->lat, $latlngObj->lng);
 
         if ($address == null)
         {
-            return null;
+            return 'NO ADDRESS';
         }
 
         $teams = teamTable::getTeams();
 
         foreach ($teams as $team)
         {
-            $result = $this->getDistanceAddressCity($address, $team->city);
-
-            if ($result)
+            $distance = $this->getDistanceAddressCity($address, $team->city);
+            echo 'Distance: ' . $distance . '<br>';
+            
+            if ($distance && ($nearestTeam == null || $distance < $minDistance))
             {
-                if ($result < $nearestTeam['distance'] || $nearestTeam['distance'] == null)
-                {
-                    $nearestTeam = array(
-                        'team'      =>  $team,
-                        'distance'  =>  $result
-                    );
-                }
+                $nearestTeam = $team;
+                $minDistance = $distance;
             }
         }
 
-        return $nearestTeam['team'];
+        return 'TEAM: ' . $nearestTeam;
 
     }
 
@@ -112,7 +106,7 @@ class geolocCtrl extends Controller {
 
         }
 
-        $origin = strtolower($address);
+        $origin = $address; // strtolower($address);
 
         $data = [
             'origins'		=>	$origin,
@@ -137,16 +131,9 @@ class geolocCtrl extends Controller {
 
         //echo 'sendDistanceRequest: $url = ' . $url . '; $result = ' . $result . '; $info = '; var_dump($info); echo '<br>';
 
-        if ($info)
+        if ($info && isset($info['rows'][0]['elements'][0]['distance']['value']))
         {
-
-            if ($info['rows'][0]['elements'][0]['distance']['value'])
-            {
-
-                return floatval($info['rows'][0]['elements'][0]['distance']['value']);
-
-            }
-
+            return $info['rows'][0]['elements'][0]['distance']['value']; //floatval($info['rows'][0]['elements'][0]['distance']['value']);
         }
 
         return null;
