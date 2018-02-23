@@ -25,7 +25,7 @@ class indexCtrl extends Controller {
         $teamsInDB = teamTable::getTeams();
         $teams = array();
         
-        foreach ($teams as $team)
+        foreach ($teamsInDB as $team)
         {
             $teams[] = $team->name;
         }
