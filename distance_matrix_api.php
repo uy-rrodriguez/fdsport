@@ -46,8 +46,8 @@ class DistanceMatrixApi
         }
         
         $nearestTeam = array(
-            'team'      ->  null,
-            'distance'  ->  null
+            'team'      =>  null,
+            'distance'  =>  null
         );
 
         $teams = teamTable::getTeams();
