@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="<?= BASE_URL ?>/assets/fontawesome/css/fontawesome-all.min.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/fdsport.css">
 
-    <script src="<?= BASE_URL ?>/assets/js/jquery-3.2.1.min.js"></script>
+    <script src="<?= BASE_URL ?>/assets/js/jquery.min.js"></script>
 </head>
 
 <body>
